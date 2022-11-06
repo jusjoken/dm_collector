@@ -3,10 +3,8 @@ package ca.admin.delivermore.collector.data.tookan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +13,7 @@ import javax.annotation.Generated;
 import ca.admin.delivermore.collector.data.Utility;
 import ca.admin.delivermore.collector.data.entity.Restaurant;
 import ca.admin.delivermore.collector.data.Config;
-import ca.admin.delivermore.data.entity.DriverPayoutEntity;
+import ca.admin.delivermore.collector.data.entity.DriverPayoutEntity;
 import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import ca.admin.delivermore.collector.data.entity.OrderDetail;
 import ca.admin.delivermore.collector.data.service.DriversRepository;
@@ -114,7 +112,7 @@ public class TaskDetail {
 
     private TaskType taskType;
     private Restaurant restaurant = new Restaurant();
-    private Restaurant unknownRestaurant = new Restaurant(1L, "Unknown", 0.0, "");
+    private Restaurant unknownRestaurant = new Restaurant(1L, "Unknown", LocalDate.parse("2022-08-14"));
     private Driver driver = new Driver();
     private Config config = new Config();
 
@@ -624,16 +622,22 @@ public class TaskDetail {
         try {
             //sometimes the restaurant id is passed with a .0 at the end so is esentially a doube but we need a long
             Long tId = Double.valueOf(restaurantIdString).longValue();
+            List<Restaurant> restaurantList = new ArrayList<>();
             Restaurant tRestaurant;
             if(restaurantIsGlobal){
                 //System.out.println("******getRestaurant: jobId:" + jobId + " returning for Global:" + restaurantRepository.findByRestaurantId(tId));
-                tRestaurant = restaurantRepository.findByRestaurantId(tId);
+                restaurantList = restaurantRepository.findEffectiveByRestaurantId(tId,getCreationDate().toLocalDate());
             }else{
                 //System.out.println("******getRestaurant: jobId:" + jobId + " returning for Form:" + restaurantRepository.findByFormId(tId));
-                tRestaurant = restaurantRepository.findByFormId(tId);
+                restaurantList = restaurantRepository.findEffectiveByFormId(tId,getCreationDate().toLocalDate());
             }
-            if(tRestaurant==null) return unknownRestaurant;
-            return tRestaurant;
+            if(restaurantList.size()==0){
+                return unknownRestaurant;
+            }else{
+                tRestaurant = restaurantList.get(0); //get the first item incase multiples match
+                if(tRestaurant==null) return unknownRestaurant;
+                return tRestaurant;
+            }
         } catch (NumberFormatException e) {
             e.printStackTrace();
             System.out.println("******getRestaurant: jobId:" + jobId + " id was not a Long so returning unknown");
@@ -777,6 +781,16 @@ public class TaskDetail {
         }
         taskEntity.setCommissionRate(restaurant.getCommissionRate());
 
+        //set the pos_payment value
+        //TODO: moved this code to the PayoutPeriod process so this field can be removed later
+        if(taskType.equals(TaskType.GLOBAL)){
+            taskEntity.setPosPayment(restaurant.getPosGlobal());
+        }else if(taskType.equals(TaskType.FORM)){
+            taskEntity.setPosPayment(restaurant.getPosPhonein());
+        }else{
+            taskEntity.setPosPayment(true);
+        }
+
         //add data for GlobalFood tasks
         OrderDetail orderDetail = null;
 
@@ -786,8 +800,16 @@ public class TaskDetail {
         }
 
         //Calculate commission
+        //commission per delivery is only used by Mikes - old expired entry in restaurants table
+        // but remains here for calculating old records
+        // (since 2022-10-16 when Mike's changed to 15% on Global and $2.50 per phonein delivery)
+        if(restaurant.getCommissionPerDelivery()>0.0){
+            taskEntity.setCommission(taskEntity.getCommission() + restaurant.getCommissionPerDelivery());
+        }
+
         if(taskType.equals(TaskType.GLOBAL)){
             //commission is GlobalSubtotal times commission - updated in updateGlobalData
+
         }else if(taskType.equals(TaskType.FORM)){
             //commission is receipt total less paid to vendor
             if(taskEntity.getPaidToVendor()!=null && taskEntity.getReceiptTotal()!=null){
@@ -795,25 +817,10 @@ public class TaskDetail {
             }
             //commission per delivery is only used for FORM (phonein) deliveries
             // (since 2022-10-16 when Mike's changed to 15% on Global and $2.50 per phonein delivery)
-            if(restaurant.getCommissionPerDelivery()>0.0){
-                taskEntity.setCommission(taskEntity.getCommission() + restaurant.getCommissionPerDelivery());
+            if(restaurant.getCommissionPerPhonein()>0.0){
+                taskEntity.setCommission(taskEntity.getCommission() + restaurant.getCommissionPerPhonein());
             }
         }
-
-        /* OLD METHOD prior to Mike's changing 2022-10-16
-        //Calculate commission
-        if(restaurant.getCommissionPerDelivery()>0.0){
-            //commission is per delivery
-            taskEntity.setCommission(restaurant.getCommissionPerDelivery());
-        }else if(taskType.equals(TaskType.GLOBAL)){
-            //commission is GlobalSubtotal times commission - updated in updateGlobalData
-        }else if(taskType.equals(TaskType.FORM)){
-            //commission is receipt total less paid to vendor
-            if(taskEntity.getPaidToVendor()!=null && taskEntity.getReceiptTotal()!=null){
-                taskEntity.setCommission(Utility.getInstance().round(taskEntity.getReceiptTotal() - taskEntity.getPaidToVendor(),2));
-            }
-        }
-         */
 
         //update all calculated fields - needs to occur AFTER global data has been loaded
         taskEntity.updateCalculatedFields();

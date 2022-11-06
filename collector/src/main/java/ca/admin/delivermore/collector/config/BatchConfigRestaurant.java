@@ -85,6 +85,7 @@ public class BatchConfigRestaurant {
 
     private List<Restaurant> getRestaurants(){
         List<Restaurant> restaurantList = new ArrayList<>();
+        /*
         restaurantList.add(new Restaurant(402970L, "A&W", 0.1, 551118L, "QMvJ9Fg5esjqNXymZq"));
         restaurantList.add(new Restaurant(402971L, "Booster Juice", 0.1, "XkdvOh75RF01OeEqEp"));
         restaurantList.add(new Restaurant(402972L, "Boston Pizza", 0.1, "arZQmt7E7irYOXE37J"));
@@ -97,7 +98,7 @@ public class BatchConfigRestaurant {
         restaurantList.add(new Restaurant(402979L, "Imperial Dragon", 0.1, 551315L, "BGgq3tkbqhPpPjlDX"));
         restaurantList.add(new Restaurant(402981L, "Little Caesars", 0.1, "rjwlYUdmqhj0YmEE0"));
         restaurantList.add(new Restaurant(402982L, "McDonald's",0.1, 3.5, "6q1lWHWgaUaJnxwO8"));
-        restaurantList.add(new Restaurant(402983L, "Mike's Bar & Grill",0.0,2.5, 0.0, 551314L, "yxzVnhRVVc49RQoN6Y"));
+        restaurantList.add(new Restaurant(402983L, "Mike's Bar & Grill",0.15,2.5, 0.0, 551314L, "yxzVnhRVVc49RQoN6Y"));
         restaurantList.add(new Restaurant(402985L, "OPA!",0.1,3.0, "VV1vPUQbOFv5Z9adG"));
         restaurantList.add(new Restaurant(402986L, "Original Joe's Strathmore",0.1, "PJx56CwgyCDoEkXj8w"));
         restaurantList.add(new Restaurant(402987L, "Papa John's",0.15, 551465L, "gQ7dotQ0nfmdjNlv3B"));
@@ -108,6 +109,7 @@ public class BatchConfigRestaurant {
         restaurantList.add(new Restaurant(402995L, "Smiley's",0.0, "8MdP5tW8bCB5YDq9x5"));
         restaurantList.add(new Restaurant(402996L, "Taco Time",0.1,4.0, "M4MOpT4zgI4RqM97w"));
         restaurantList.add(new Restaurant(402057L, "Demo",0.1,550957L, "0zOwwuW6mCQJeWqORW"));
+         */
         return restaurantList;
     }
 

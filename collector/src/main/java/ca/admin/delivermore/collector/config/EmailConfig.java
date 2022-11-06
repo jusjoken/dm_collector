@@ -1,8 +1,10 @@
 package ca.admin.delivermore.collector.config;
 
 import ca.admin.delivermore.collector.data.Config;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -12,6 +14,10 @@ import java.util.Properties;
 @Configuration
 public class EmailConfig
 {
+
+    @Autowired
+    private Environment environment;
+
     @Bean
     public SimpleMailMessage emailTemplate()
     {
@@ -37,8 +43,8 @@ public class EmailConfig
         p.setProperty("mail.smtp.starttls.enable", "true");
         p.setProperty("mail.smtp.ssl.trust", "smtp.office365.com");
 
-        sender.setUsername("tara.birch@delivermore.ca");
-        sender.setPassword(""); //TODO: move password to ENV
+        sender.setUsername(environment.getProperty("DM_EMAIL_USER"));
+        sender.setPassword(environment.getProperty("DM_EMAIL_PASSWORD"));
 
         Config.getInstance().setFromEmail("tara.birch@delivermore.ca");
 

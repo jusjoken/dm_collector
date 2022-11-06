@@ -1,4 +1,4 @@
-package ca.admin.delivermore.data.entity;
+package ca.admin.delivermore.collector.data.entity;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;

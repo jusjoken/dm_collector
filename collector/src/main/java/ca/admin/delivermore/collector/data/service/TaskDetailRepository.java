@@ -1,6 +1,6 @@
 package ca.admin.delivermore.collector.data.service;
 
-import ca.admin.delivermore.data.entity.DriverPayoutEntity;
+import ca.admin.delivermore.collector.data.entity.DriverPayoutEntity;
 import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +13,12 @@ import java.util.UUID;
 public interface  TaskDetailRepository extends JpaRepository<TaskEntity, UUID> {
     @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate")
     List<TaskEntity> search(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
+
+    @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.restaurantId = :restaurantId and t.jobStatus = 2")
+    List<TaskEntity> getTaskEntityByDateAndRestaurant(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("restaurantId") Long restaurantId);
+
+    @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.restaurantId = :restaurantId and t.jobStatus = 9")
+    List<TaskEntity> getTaskEntityByDateAndRestaurantCancelled(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("restaurantId") Long restaurantId);
 
     @Query("select new DriverPayoutEntity(t.jobId,t.restaurantName,t.customerUsername,t.creationDate,t.tip,t.notes,t.tipInNotesIssue,t.paymentMethod,t.driverPay,t.totalSale,t.fleetId,t.fleetName,t.driverIncome,t.driverCash,t.driverPayout) from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.jobStatus = 2 order by t.fleetName, t.creationDate")
     List<DriverPayoutEntity> getDriverPayout(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);

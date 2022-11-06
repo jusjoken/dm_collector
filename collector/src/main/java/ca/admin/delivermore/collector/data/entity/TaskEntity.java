@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import ca.admin.delivermore.data.entity.DriverPayoutEntity;
+import ca.admin.delivermore.collector.data.entity.DriverPayoutEntity;
 
 @Entity
 @IdClass(TaskEntityPk.class)
@@ -154,6 +154,17 @@ public class TaskEntity{
     private Double driverCash = 0.0;
     @CsvBindByName(column = "driverPayout")
     private Double driverPayout = 0.0;
+
+    @Column(name = "pos_payment", nullable = false)
+    private Boolean posPayment;
+
+    public Boolean getPosPayment() {
+        return posPayment;
+    }
+
+    public void setPosPayment(Boolean posPayment) {
+        this.posPayment = posPayment;
+    }
 
     public String getSource() {
         return source;
@@ -605,6 +616,7 @@ public class TaskEntity{
         //provide calculated fields for driver payout
         //System.out.println("setDriverIncome for task:" + jobId + " getDriverPay:" + taskEntity.getDriverPay() + " getTip" + taskEntity.getTip());
         setDriverIncome(Utility.getInstance().round(getDriverPay() + getTip(),2));
+        setDriverCash(0.0); //default it to zero then if CASH then calculate it
         if(getPaymentMethod()!=null && getPaymentMethod().equalsIgnoreCase("CASH")){
             //System.out.println("setDriverCash for task:" + jobId + " getTotalSale:" + taskEntity.getTotalSale() + " getTip" + taskEntity.getTip());
             setDriverCash(Utility.getInstance().round(getTip() + getTotalSale(),2));

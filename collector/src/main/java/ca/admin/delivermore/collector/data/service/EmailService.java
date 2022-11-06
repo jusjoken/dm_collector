@@ -61,7 +61,7 @@ public class EmailService
             {
                 String from = Config.getInstance().getFromEmail();
 
-                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+                mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
                 mimeMessage.setFrom(new InternetAddress(from));
                 mimeMessage.setSubject(subject);
                 mimeMessage.setText(body);
