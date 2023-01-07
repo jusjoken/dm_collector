@@ -20,11 +20,11 @@ public class DriverProcessor implements ItemProcessor<Driver, Driver> {
         /*
         //mark drivers not in the validDrivers list as inactive
         if(inDriverList(driver)){
-            //System.out.println("DriverProcessor: checking driver: found:" + driver.getName());
+            //log.info("DriverProcessor: checking driver: found:" + driver.getName());
             driver.setIsActive(1L);
             return driver;
         }else {
-            //System.out.println("DriverProcessor: checking driver: NOT found:" + driver.getName());
+            //log.info("DriverProcessor: checking driver: NOT found:" + driver.getName());
             driver.setIsActive(0L);
             return driver;
         }

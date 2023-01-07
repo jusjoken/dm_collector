@@ -2,8 +2,13 @@ package ca.admin.delivermore.collector.config;
 
 import ca.admin.delivermore.collector.data.Config;
 import ca.admin.delivermore.collector.data.entity.Restaurant;
+import ca.admin.delivermore.collector.data.entity.TaskEntity;
+import ca.admin.delivermore.collector.data.service.RestClientService;
 import ca.admin.delivermore.collector.data.service.RestaurantRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -14,6 +19,7 @@ import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +27,20 @@ import java.util.List;
 @Configuration
 @EnableBatchProcessing
 @AllArgsConstructor
+@Log4j2
 public class BatchConfigRestaurant {
 
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
     private RestaurantRepository restaurantRepository;
+    /*
+    This is no longer in use for Restaurants.... used for other testing in Collector
+     */
 
     @Bean
     public ListItemReader<Restaurant> restaurantItemReader(){
         if(Config.getInstance().getRunRestaurantJob()){
-            System.out.println("BatchConfigRestaurant: restaurantItemReader");
+            log.info("BatchConfigRestaurant: restaurantItemReader");
             return new ListItemReader<>(getRestaurants());
         }else{
             return null;
@@ -73,7 +83,7 @@ public class BatchConfigRestaurant {
     @Bean
     public Job restaurantJob(){
         if(Config.getInstance().getRunRestaurantJob()){
-            System.out.println("BatchConfigRestaurant: restaurantJob");
+            log.info("BatchConfigRestaurant: restaurantJob");
             return jobBuilderFactory.get("restaurantJob")
                     .incrementer(new RunIdIncrementer())
                     .flow(restaurantsStep())

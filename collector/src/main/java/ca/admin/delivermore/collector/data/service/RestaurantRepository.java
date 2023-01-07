@@ -17,6 +17,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
     @Query("select r from Restaurant r where r.restaurantId = :restaurantId and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null))")
     List<Restaurant> findEffectiveByRestaurantId(@Param("restaurantId") Long restaurantId, @Param("dateEffective") LocalDate dateEffective);
 
+    @Query("select r from Restaurant r where r.name = :restaurantName and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null))")
+    List<Restaurant> findEffectiveByRestaurantName(@Param("restaurantName") String restaurantName, @Param("dateEffective") LocalDate dateEffective);
+
     @Query("select t from Restaurant t WHERE t.formId = :formId")
     List<Restaurant> findByFormId(@Param("formId") Long formId);
 
@@ -28,6 +31,14 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
 
     @Query("select r from Restaurant r where r.activeForPayout = true and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null)) order by r.name")
     List<Restaurant> getEffectiveRestaurantsForPayout(@Param("dateEffective") LocalDate dateEffective);
+
+    @Query("select distinct r from Restaurant r where r.activeForPayout = true and r.dateExpired is null order by r.name")
+    List<Restaurant> findDistinctNonExpiredRestaurants();
+
+    @Query("select r.restaurantId from Restaurant r where r.posGlobal = true and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null))")
+    List<Long> getEffectiveRestaurantIdsGlobalPos(@Param("dateEffective") LocalDate dateEffective);
+
+
 
     /* query for restaurant_new to get single effective row
     select * from restaurant r where (r.date_effective <= '2022-10-17' and r.date_expired >= '2022-10-17') or (r.date_effective <= '2022-10-17' and r.date_expired is null)

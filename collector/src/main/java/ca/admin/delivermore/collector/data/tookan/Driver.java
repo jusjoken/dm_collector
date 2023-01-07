@@ -2,12 +2,13 @@
 package ca.admin.delivermore.collector.data.tookan;
 
 import javax.annotation.Generated;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import ca.admin.delivermore.collector.data.Role;
 import com.fasterxml.jackson.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -103,6 +104,13 @@ public class Driver {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
      */
+
+    @JsonIgnore
+    private String hashedPassword;
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Role> roles;
 
     /**
      * No args constructor for use in serialization
@@ -443,6 +451,22 @@ public class Driver {
         this.additionalProperties.put(name, value);
     }
      */
+
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 
     @Override
     public String toString() {

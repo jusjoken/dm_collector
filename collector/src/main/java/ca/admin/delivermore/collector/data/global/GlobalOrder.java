@@ -942,13 +942,16 @@ public class GlobalOrder {
         orderDetail.setPaymentMethod(payment);
         orderDetail.setTotalTaxes(taxValue);
         orderDetail.setOrderType(type);
+        orderDetail.setClientName(clientFirstName + " " + clientLastName);
         for (Item item:items) {
             if(item.getType().equals("delivery_fee")){
-                //System.out.println("***getOrderDetail***: order:" + id + " getPrice:" + item.getPrice() + " getItemDiscount:" + item.getItemDiscount() + " getTotalItemPrice:" + item.getTotalItemPrice());
+                //log.info("***getOrderDetail***: order:" + id + " getPrice:" + item.getPrice() + " getItemDiscount:" + item.getItemDiscount() + " getTotalItemPrice:" + item.getTotalItemPrice());
                 orderDetail.setDeliveryFee(item.getTotalItemPrice());
-                //System.out.println("***getOrderDetail***: order:" + id + " setDeliveryFee after:" + orderDetail.getDeliveryFee());
+                //log.info("***getOrderDetail***: order:" + id + " setDeliveryFee after:" + orderDetail.getDeliveryFee());
             }else if(item.getType().equals("service_fee_subtotal")){
                 orderDetail.setServiceFee(item.getPrice());
+            }else if(item.getType().equals("tip")){
+                orderDetail.setTip(item.getTotalItemPrice());
             }
         }
         return orderDetail;

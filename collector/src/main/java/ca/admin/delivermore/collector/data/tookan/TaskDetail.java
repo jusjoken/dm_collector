@@ -1,8 +1,6 @@
 
 package ca.admin.delivermore.collector.data.tookan;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +23,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.springframework.context.annotation.Bean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -262,6 +261,8 @@ public class TaskDetail {
     private Double tipInNotes = 0.0;
     private String notes = null;
     private Boolean tipInNotesIssue = Boolean.FALSE;
+    private Boolean webOrder = Boolean.FALSE;
+    private Boolean feesOnly = Boolean.FALSE;
     private Double tipGlobal = null;
     private Double deliveryFee = 0.0;
     private Double receiptTotal = null;
@@ -278,6 +279,7 @@ public class TaskDetail {
     private Boolean skipGlobal = Boolean.FALSE;
 
     private Long longOrderId = null;
+    private Logger log = LoggerFactory.getLogger(TaskDetail.class);
 
     /**
      * No args constructor for use in serialization
@@ -357,7 +359,7 @@ public class TaskDetail {
      */
     public TaskDetail(Long jobId, Long createdBy, String orderId, String recurringId, Long recurringCount, Object partnerOrderId, Long teamId, Long vertical, Long merchantId, Long geofence, String tags, Long autoAssignment, Long dispatcherId, String jobHash, Long hasPickup, Long hasDelivery, Long isRouted, String pickupDeliveryRelationship, String jobDescription, String jobPickupDatetime, String jobPickupName, String jobPickupPhone, String jobDeliveryDatetime, String jobPickupLatitude, String jobPickupLongitude, String jobPickupAddress, Object jobPickupEmail, String jobLatitude, String jobLongitude, String customerUsername, String customerEmail, String customerPhone, String jobAddress, String creationDatetime, Long fleetId, Long userId, Long fleetRating, Object customerComment, Long isCustomerRated, Long customerId, String arrivedDatetime, String startedDatetime, String completedDatetime, String acknowledgedDatetime, Long jobStatus, Long isActive, Long jobType, Long completedByAdmin, Long openTrackingLink, String timezone, String jobTime, String jobDate, String jobTimeUtc, String jobDateUtc, Long totalDistanceTravelled, Long formId, Object customerRating, Object driverComment, Object remarks, Object barcode, Long rideType, Object matchedPickupDeliveryRelationship, List<CustomField> customField, String trackingLink, List<TaskHistory> taskHistory, JobAdditionalInfo jobAdditionalInfo) {
         super();
-        System.out.println("TaskDetail: full contructor called");
+        log.info("TaskDetail: full contructor called");
         this.jobId = jobId;
         this.createdBy = createdBy;
         this.orderId = orderId;
@@ -460,20 +462,20 @@ public class TaskDetail {
             //process all taskHistory details
             Integer noteCounter = 0;
             for (TaskHistory historyItem: taskHistory) {
-                //System.out.println("TaskDetail: init: historyItem:" + historyItem.getType());
+                //log.info("TaskDetail: init: historyItem:" + historyItem.getType());
                 if(historyItem.getType().equals("text_added") || historyItem.getType().equals("text_updated")){
                     noteCounter++;
                     String thisNote = historyItem.getDescription();
                     if(thisNote.matches("^[ A-Za-z]+$")){
                         //skip a note field that is all letters
-                        //System.out.println("TaskDetail: init:" + jobId + " tipInNotes count:" + noteCounter + " SKIPPING ALL ALPHA note:" + thisNote + " notes:" + notes);
+                        //log.info("TaskDetail: init:" + jobId + " tipInNotes count:" + noteCounter + " SKIPPING ALL ALPHA note:" + thisNote + " notes:" + notes);
                         if(noteCounter>1){
                             notes = notes + "\n" + thisNote;
                         }else{
                             notes = thisNote;
                         }
                     }else{
-                        //System.out.println("TaskDetail: init: tipInNotes:" + thisNote);
+                        //log.info("TaskDetail: init: tipInNotes:" + thisNote);
                         if(noteCounter>1){
                             tipInNotesIssue = Boolean.TRUE;
                             notes = notes + "\n" + thisNote;
@@ -481,15 +483,15 @@ public class TaskDetail {
                             tipInNotes = getDoubleForNotes(thisNote);
                             //tipInNotes = 0.0;
                             if(tipInNotes.equals(-1.0)){
-                                System.out.println("TaskDetail: init:" + jobId + " tipInNotes: failed getDouble - setting to 0.0 Counter:" + noteCounter);
+                                log.info("TaskDetail: init:" + jobId + " tipInNotes: failed getDouble - setting to 0.0 Counter:" + noteCounter);
                                 tipInNotes = 0.0;
                             }
-                            //System.out.println("TaskDetail: init:" + jobId + " tipInNotes count:" + noteCounter + " note:" + notes + " value:" + tipInNotes + " Marking as potential issue");
+                            //log.info("TaskDetail: init:" + jobId + " tipInNotes count:" + noteCounter + " note:" + notes + " value:" + tipInNotes + " Marking as potential issue");
                         }else{
                             tipInNotes = getDoubleForNotes(thisNote);
                             if(tipInNotes.equals(-1.0)){
                                 tipInNotesIssue = Boolean.TRUE;
-                                System.out.println("TaskDetail: init:" + jobId + " tipInNotes: failed getDouble - setting to 0.0");
+                                log.info("TaskDetail: init:" + jobId + " tipInNotes: failed getDouble - setting to 0.0");
                                 tipInNotes = 0.0;
                             }
                             notes = thisNote;
@@ -527,14 +529,20 @@ public class TaskDetail {
                     else if(customItem.getLabel().startsWith("Total_with_fees")){
                         totalWithFees = getDouble(customItem.getData().getDataAsString());
                     }
+                    else if(customItem.getLabel().equals("Web_Order")){
+                        webOrder = Boolean.valueOf(customItem.getData().getDataAsString());
+                    }
+                    else if(customItem.getLabel().equals("Fees_Only")){
+                        feesOnly = Boolean.valueOf(customItem.getData().getDataAsString());
+                    }
                     else if(customItem.getLabel().equals("Payment_Method")){
                         if(customItem.getFleetData()!=null){
-                            paymentMethod = customItem.getFleetData().toString().trim();
+                            paymentMethod = customItem.getFleetData().toString().trim().toUpperCase();
                         }
                     }
                 }else if(taskType.equals(TaskType.GLOBAL)){ //GlobalFood create tasks
                     if(customItem.getLabel().equals("Payment")){
-                        paymentMethod = customItem.getData().getdataString().trim();
+                        paymentMethod = customItem.getData().getdataString().trim().toUpperCase();
                     }
                     else if(customItem.getLabel().equals("Tip")){
                         tipGlobal = getDouble(customItem.getData().getDataAsString());
@@ -607,15 +615,17 @@ public class TaskDetail {
             taskEntity.setAutoAssignment(autoAssignment);
             taskEntity.setUserId(userId);
             taskEntity.setCreatedBy(createdBy);
+            taskEntity.setWebOrder(webOrder);
+            taskEntity.setFeesOnly(feesOnly);
 
             initComplete = Boolean.TRUE;
         }
     }
 
     private Restaurant getRestaurant(RestaurantRepository restaurantRepository){
-        //System.out.println("******getRestaurant: jobId:" + jobId + " looking for:" + restaurantIdString);
+        //log.info("******getRestaurant: jobId:" + jobId + " looking for:" + restaurantIdString);
         if(restaurantIdString==null){
-            System.out.println("******getRestaurant: jobId:" + jobId + " id for restaurant was null");
+            log.info("******getRestaurant: jobId:" + jobId + " id for restaurant was null");
             return unknownRestaurant;
             //return restaurantService.getUnknownRestaurant();
         }
@@ -625,10 +635,10 @@ public class TaskDetail {
             List<Restaurant> restaurantList = new ArrayList<>();
             Restaurant tRestaurant;
             if(restaurantIsGlobal){
-                //System.out.println("******getRestaurant: jobId:" + jobId + " returning for Global:" + restaurantRepository.findByRestaurantId(tId));
+                //log.info("******getRestaurant: jobId:" + jobId + " returning for Global:" + restaurantRepository.findByRestaurantId(tId));
                 restaurantList = restaurantRepository.findEffectiveByRestaurantId(tId,getCreationDate().toLocalDate());
             }else{
-                //System.out.println("******getRestaurant: jobId:" + jobId + " returning for Form:" + restaurantRepository.findByFormId(tId));
+                //log.info("******getRestaurant: jobId:" + jobId + " returning for Form:" + restaurantRepository.findByFormId(tId));
                 restaurantList = restaurantRepository.findEffectiveByFormId(tId,getCreationDate().toLocalDate());
             }
             if(restaurantList.size()==0){
@@ -640,16 +650,30 @@ public class TaskDetail {
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            System.out.println("******getRestaurant: jobId:" + jobId + " id was not a Long so returning unknown");
+            log.info("******getRestaurant: jobId:" + jobId + " id was not a Long so returning unknown");
             return unknownRestaurant;
         }
     }
 
     private LocalDateTime convertJsonDate(String input){
+        //new conversion updated 11/24/2022 to make sure offset changes with DST
+        String inputNoOffset = input.substring(0,19);
+        //log.info("convertJsonDate: input" + input + " inputNoOffset:" + inputNoOffset);
+        ZoneId mountainZone = ZoneId.of("America/Edmonton");
+        ZoneId universalZone = ZoneId.of("Universal");
+        ZonedDateTime universalZoned = LocalDateTime.parse(inputNoOffset).atZone(universalZone);
+        ZonedDateTime mountainZoned = universalZoned.withZoneSameInstant(mountainZone);
+        //log.info("convertJsonDate: Zoned:" + mountainZoned + " toLDT:" + mountainZoned.toLocalDateTime());
+
+        /*
         OffsetDateTime odt = OffsetDateTime.parse(input);
         Instant instant = odt.toInstant();
         OffsetDateTime odtMountain = instant.atOffset(ZoneOffset.of("-06:00"));
+        log.info("convertJsonDate: Offset:" + odtMountain.toLocalDateTime());
         return odtMountain.toLocalDateTime();
+
+         */
+        return mountainZoned.toLocalDateTime();
     }
 
     private Double getDouble(String input){
@@ -665,7 +689,7 @@ public class TaskDetail {
             output = Double.parseDouble(input);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            System.out.println("TaskDetail: jobId:" + jobId + " getDouble failed for input: '" + input + "'");
+            log.info("TaskDetail: jobId:" + jobId + " getDouble failed for input: '" + input + "'");
             //return -0.0 so we know there was an issue
             output = -0.0;
         }
@@ -689,13 +713,13 @@ public class TaskDetail {
             }else if(input.contains(" ")){
                 output = Double.parseDouble(input.replace(" ","."));
                 tipInNotesIssue = Boolean.TRUE;
-                System.out.println("TaskDetail: jobId:" + jobId + " getDoubleForNotes: Marking potential issue: input:" + input + " output '" + output + "'");
+                log.info("TaskDetail: jobId:" + jobId + " getDoubleForNotes: Marking potential issue: input:" + input + " output '" + output + "'");
             }else{
                 output = Double.parseDouble(input);
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            System.out.println("TaskDetail: jobId:" + jobId + " getDoubleForNotes failed for input: '" + input + "'");
+            log.info("TaskDetail: jobId:" + jobId + " getDoubleForNotes failed for input: '" + input + "'");
             //return -0.0 so we know there was an issue
             output = -1.0;
         }
@@ -750,7 +774,7 @@ public class TaskDetail {
     //for completed tasks use the completed date/time otherwise use the creation date/time
     //TODO: may want to add a different field for the creation and leave null if not ever completed
     public LocalDateTime getCompletedDate() {
-        //System.out.println("getCompletedDate: job:" + jobId + " status:" + jobStatus + " completed:" + completedDatetime + " created:" + creationDatetime);
+        //log.info("getCompletedDate: job:" + jobId + " status:" + jobStatus + " completed:" + completedDatetime + " created:" + creationDatetime);
         if(jobStatus.equals(2L)){
             return convertJsonDate(completedDatetime);
         }
@@ -758,7 +782,7 @@ public class TaskDetail {
     }
 
     public LocalDateTime getCreationDate() {
-        //System.out.println("getCompletedDate: job:" + jobId + " status:" + jobStatus + " completed:" + completedDatetime + " created:" + creationDatetime);
+        //log.info("getCompletedDate: job:" + jobId + " status:" + jobStatus + " completed:" + completedDatetime + " created:" + creationDatetime);
         return convertJsonDate(creationDatetime);
     }
 
@@ -768,9 +792,9 @@ public class TaskDetail {
         taskEntity.setRestaurantId(restaurant.getRestaurantId());
         taskEntity.setRestaurantName(restaurant.getName());
         if(fleetId!=null){
-            //System.out.println("getTaskEntity: finding driver by id:" + fleetId);
+            //log.info("getTaskEntity: finding driver by id:" + fleetId);
             driver = driversRepository.findByFleetId(fleetId);
-            //System.out.println("getTaskEntity: findByFleetId returned:" + driver);
+            //log.info("getTaskEntity: findByFleetId returned:" + driver);
             taskEntity.setFleetName(driver.getName());
         }
         //Calculate delivery fee payback from vendors

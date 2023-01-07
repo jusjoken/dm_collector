@@ -6,6 +6,8 @@ import ca.admin.delivermore.collector.data.service.OrderDetailRepository;
 import ca.admin.delivermore.collector.data.service.RestaurantRepository;
 import ca.admin.delivermore.collector.data.service.TaskDetailRepository;
 import ca.admin.delivermore.collector.data.tookan.TaskDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,8 @@ public class TaskProcessor implements ItemProcessor<TaskDetail, TaskEntity> {
     private DriversRepository driversRepository;
 
     private TaskDetailRepository taskDetailRepository;
+
+    private Logger log = LoggerFactory.getLogger(TaskProcessor.class);
 
     public TaskProcessor(RestaurantRepository restaurantRepository, OrderDetailRepository orderDetailRepository, DriversRepository driversRepository, TaskDetailRepository taskDetailRepository) {
         this.restaurantRepository = restaurantRepository;
@@ -28,10 +32,10 @@ public class TaskProcessor implements ItemProcessor<TaskDetail, TaskEntity> {
     public TaskEntity process(TaskDetail taskDetail) throws Exception {
         if(taskDetailRepository.hasSuccessfulJobID(taskDetail.getJobId())){
             //skip
-            System.out.println("TaskProcessor: process: skipping already successful task:" + taskDetail.getJobId());
+            log.info("TaskProcessor: process: skipping already successful task:" + taskDetail.getJobId());
             return null;
         }
-        System.out.println("TaskProcessor: processing: task:" + taskDetail.getJobId());
+        log.info("TaskProcessor: processing: task:" + taskDetail.getJobId());
         return taskDetail.getTaskEntity(restaurantRepository,orderDetailRepository,driversRepository);
     }
 }

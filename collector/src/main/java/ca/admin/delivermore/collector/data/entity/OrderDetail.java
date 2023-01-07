@@ -2,10 +2,7 @@ package ca.admin.delivermore.collector.data.entity;
 
 import com.opencsv.bean.CsvBindByName;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -45,9 +42,30 @@ public class OrderDetail {
     @Enumerated(EnumType.STRING)
     private Source source = Source.CSV;
 
+    @Column(name = "tip")
+    private Double tip;
+
     private Long jsonSourceId = 0L; //used while loading from GlobalOrderJson to use to delete/mark complete the source json record
 
-    //Restaurant ID,Restaurant name,Order ID,Subtotal,Delivery fee,Total taxes,Total,Payment method,Fulfillment date (YYYY-MM-DD),Fulfillment time
+    public Double getTip() {
+        return tip;
+    }
+
+    public void setTip(Double tip) {
+        this.tip = tip;
+    }
+
+    @Column(name = "client_name")
+    private String clientName;
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+//Restaurant ID,Restaurant name,Order ID,Subtotal,Delivery fee,Total taxes,Total,Payment method,Fulfillment date (YYYY-MM-DD),Fulfillment time
 
 
     public Long getRestaurantId() {

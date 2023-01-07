@@ -11,6 +11,9 @@ import ca.admin.delivermore.collector.data.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -22,6 +25,7 @@ import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,7 @@ import java.util.List;
 @Configuration
 @EnableBatchProcessing
 @AllArgsConstructor
+@Log4j2
 public class BatchConfigGlobalOrders {
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
@@ -39,7 +44,10 @@ public class BatchConfigGlobalOrders {
 
     private TaskDetailRepository taskDetailRepository;
 
+    private EmailService emailService;
+
     private List<GlobalOrderJson> masterGlobalOrderJsonSource = new ArrayList<>();
+    //private Logger log = LoggerFactory.getLogger(BatchConfigGlobalOrders.class);
 
     @Bean
     public ListItemReader<GlobalOrderJson> globalOrderJsonItemReader(){
@@ -60,7 +68,7 @@ public class BatchConfigGlobalOrders {
                 }
             }
             for (GlobalOrderJson globalOrderJson: allGlobalOrders) {
-                System.out.println("globalOrderJsonItemReader: globalOrderJson:" + globalOrderJson);
+                log.info("globalOrderJsonItemReader: globalOrderJson:" + globalOrderJson);
             }
             return new ListItemReader<GlobalOrderJson>(allGlobalOrders);
         }else{
@@ -96,7 +104,7 @@ public class BatchConfigGlobalOrders {
         if(Config.getInstance().getRunGlobalOrderJob()){
             List<GlobalOrderJson> globalOrderJsonList = new ArrayList<>();
             globalOrderJsonList.addAll(globalOrderJsonRepository.getAllNewJson());
-            System.out.println("globalOrderItemReader: globalOrderJsonList: size:" + globalOrderJsonList.size());
+            log.info("globalOrderItemReader: globalOrderJsonList: size:" + globalOrderJsonList.size());
             masterGlobalOrderJsonSource.addAll(globalOrderJsonList);
             List<OrderDetail> orderDetailList = new ArrayList<>();
 
@@ -109,7 +117,7 @@ public class BatchConfigGlobalOrders {
                     e.printStackTrace();
                 }
                 if(globalOrderList==null){
-                    System.out.println("globalOrderItemReader: processing: could not map to GlobalOrderJson:" + globalOrderJson.toString());
+                    log.info("globalOrderItemReader: processing: could not map to GlobalOrderJson:" + globalOrderJson.toString());
                 }else{
                     for (GlobalOrder globalOrder: globalOrderList.getOrders()) {
                         OrderDetail orderDetail = globalOrder.getOrderDetail();
@@ -117,19 +125,61 @@ public class BatchConfigGlobalOrders {
                         orderDetailList.add(orderDetail);
                         //update an existing TaskEntiy if one already exists
                         List<TaskEntity> taskEntityList = taskDetailRepository.findByOrderId(String.valueOf(orderDetail.getOrderId()));
-                        if(taskEntityList!=null){
+                        //log.info("globalOrderItemReader: checking if order is in tookan: " + orderDetail.getOrderId());
+                        if(taskEntityList!=null && taskEntityList.size()>0){
+                            //log.info("globalOrderItemReader: found in tookan: " + orderDetail.getOrderId());
                             for (TaskEntity taskEntity: taskEntityList) {
                                 taskEntity.updateGlobalData(orderDetail);
                                 taskEntity.updateCalculatedFields();
                                 taskEntity.updateDriverPayoutEntity();
                                 taskDetailRepository.save(taskEntity);
                             }
+                        }else{
+                            log.info("globalOrderItemReader: NOT found in database.  Checking Tookan API for order: " + orderDetail.getOrderId());
+                            //perform extra check incase the database is just behind in processing
+                            if(restClientService.hasOrderId(orderDetail.getOrderId().toString())){
+                                log.info("globalOrderItemReader: found order using Tookan API for order: " + orderDetail.getOrderId());
+
+                            }else{
+                                log.info("globalOrderItemReader: NOT found using Tookan API for order: " + orderDetail.getOrderId());
+                                //no tookan task found so send an email
+                                String emailBody = null;
+                                List<Restaurant> restaurants = restaurantRepository.findEffectiveByRestaurantId(orderDetail.getRestaurantId(), LocalDate.now());
+                                if(restaurants!=null && restaurants.size()>0){
+                                    emailBody = "Restaurant:" + restaurants.get(0).getName() + " order:" + orderDetail.getOrderId() + " missing from Tookan";
+                                }else{
+                                    emailBody = "Order:" + orderDetail.getOrderId() + " missing from Tookan";
+                                }
+                                //add additional global order info to body
+                                String tip;
+                                if(orderDetail.getTip()==null) tip = "";
+                                else tip = orderDetail.getTip().toString();
+                                String customer;
+                                if(orderDetail.getClientName()==null) customer = "";
+                                else customer = orderDetail.getClientName();
+                                emailBody = emailBody + "\nGlobal info: \n method: "
+                                        + orderDetail.getPaymentMethod()
+                                        + " \n subtotal: " + orderDetail.getSubtotal()
+                                        + "\n taxes: " + orderDetail.getTotalTaxes()
+                                        + "\n del fee: " + orderDetail.getDeliveryFee()
+                                        + "\n service fee: " + orderDetail.getServiceFee()
+                                        + "\n tip: " + tip
+                                        + "\n customer: " + customer;
+                                //calc what del fee should be as it needs to include taxes as custom orders do not have a taxes field
+                                Double customDelFee = 4.5;
+                                if(orderDetail.getDeliveryFee()!=null && orderDetail.getTotalTaxes()!=null){
+                                    customDelFee = orderDetail.getDeliveryFee() + orderDetail.getTotalTaxes();
+                                }
+                                emailBody = emailBody + "\nCustom info:\n receipt total: " + orderDetail.getSubtotal() + "\n del fee: " + customDelFee + " (includes del fee and taxes if any)";
+                                emailService.sendMail("support@delivermore.ca", "Order missing task:" + orderDetail.getOrderId(), emailBody);
+                                log.info("globalOrderItemReader: missing order from tookan: " + emailBody);
+                            }
                         }
-                        System.out.println("globalOrderItemReader: globalOrderList:" + globalOrder);
+                        log.info("globalOrderItemReader: globalOrderList:" + globalOrder);
                     }
                 }
             }
-            System.out.println(String.format("...processed %d globalOrders.", orderDetailList.size()));
+            log.info(String.format("...processed %d globalOrders.", orderDetailList.size()));
             return new ListItemReader<>(orderDetailList);
         }else{
             return null;
@@ -146,7 +196,7 @@ public class BatchConfigGlobalOrders {
                 globalOrderJson.setStatus(GlobalOrderJson.Status.COMPLETE);
                 globalOrderJson.setLastUpdated(LocalDateTime.now());
                 globalOrderJsonRepository.save(globalOrderJson);
-                System.out.println("globalOrderDetailItemWriter: globalOrderJson:" + globalOrderJson);
+                log.info("globalOrderDetailItemWriter: globalOrderJson:" + globalOrderJson);
             }
             return writer;
         }else{

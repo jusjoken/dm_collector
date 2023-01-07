@@ -37,7 +37,8 @@ public class Utility {
     private static final String DASH = "-";
 
     public static String dateRangeFormatted(LocalDate startDate, LocalDate endDate) {
-        String formattedDateRange;
+        String formattedDateRange = "N/F";
+        if(endDate==null) endDate = startDate;
 
         // Get a comparison result to determine if the Months are the same
         String startDateMonth = MONTH_FORMAT.format(startDate);

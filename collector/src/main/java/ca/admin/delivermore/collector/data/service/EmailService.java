@@ -1,6 +1,9 @@
 package ca.admin.delivermore.collector.data.service;
 
+import ca.admin.delivermore.collector.config.TaskProcessor;
 import ca.admin.delivermore.collector.data.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
@@ -23,6 +26,8 @@ public class EmailService
 
     @Autowired
     private SimpleMailMessage preConfiguredMessage;
+
+    private Logger log = LoggerFactory.getLogger(EmailService.class);
 
     /**
      * This method will send compose and send the message
@@ -78,7 +83,7 @@ public class EmailService
         }
         catch (MailException ex) {
             // simply log it and go on...
-            System.err.println(ex.getMessage());
+            log.error(ex.getMessage());
         }
     }
 
@@ -106,7 +111,7 @@ public class EmailService
         }
         catch (MailException ex) {
             // simply log it and go on...
-            System.err.println(ex.getMessage());
+            log.error(ex.getMessage());
         }
     }
 }

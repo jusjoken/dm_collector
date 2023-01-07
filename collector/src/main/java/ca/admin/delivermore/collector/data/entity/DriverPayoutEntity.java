@@ -1,5 +1,6 @@
 package ca.admin.delivermore.collector.data.entity;
 
+import ca.admin.delivermore.collector.data.Utility;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 
@@ -41,6 +42,9 @@ public class DriverPayoutEntity{
     @CsvBindByName(column = "tipInNotesIssue")
     private Boolean tipInNotesIssue;
 
+    @CsvBindByName(column = "webOrder")
+    private Boolean webOrder = Boolean.FALSE;
+
     @CsvBindByName(column = "paymentMethod")
     private String paymentMethod = "";
 
@@ -65,7 +69,7 @@ public class DriverPayoutEntity{
     public DriverPayoutEntity() {
     }
 
-    public DriverPayoutEntity(Long jobId, String restaurantName, String customerUsername, LocalDateTime creationDateTime, Double tip, String notes, Boolean tipInNotesIssue, String paymentMethod, Double driverPay, Double totalSale, Long fleetId, String fleetName, Double driverIncome, Double driverCash, Double driverPayout) {
+    public DriverPayoutEntity(Long jobId, String restaurantName, String customerUsername, LocalDateTime creationDateTime, Double tip, String notes, Boolean tipInNotesIssue, String paymentMethod, Double driverPay, Double totalSale, Long fleetId, String fleetName, Double driverIncome, Double driverCash, Double driverPayout, Boolean webOrder) {
         this.jobId = jobId;
         this.restaurantName = restaurantName;
         this.customerUsername = customerUsername;
@@ -81,6 +85,7 @@ public class DriverPayoutEntity{
         this.driverIncome = driverIncome;
         this.driverCash = driverCash;
         this.driverPayout = driverPayout;
+        this.webOrder = webOrder;
     }
 
     public Long getJobId() {
@@ -120,6 +125,9 @@ public class DriverPayoutEntity{
     }
 
     public Double getTip() {
+        //check for a webOrder with payment method ONLINE as those tip are paid directly to the driver from the restaurant
+        // so ignore any tip entered by the driver
+        if(webOrder && paymentMethod.equals("ONLINE")) return 0.0;
         return tip;
     }
 
@@ -183,8 +191,19 @@ public class DriverPayoutEntity{
         this.fleetName = fleetName;
     }
 
+    /*
+        setDriverIncome(Utility.getInstance().round(getDriverPay() + getTip(),2));
+        setDriverCash(0.0); //default it to zero then if CASH then calculate it
+        if(getPaymentMethod()!=null && getPaymentMethod().equalsIgnoreCase("CASH")){
+            //log.info("setDriverCash for task:" + jobId + " getTotalSale:" + taskEntity.getTotalSale() + " getTip" + taskEntity.getTip());
+            setDriverCash(Utility.getInstance().round(getTip() + getTotalSale(),2));
+        }
+        setDriverPayout(Utility.getInstance().round(getDriverIncome() - getDriverCash(),2));
+
+     */
+
     public Double getDriverIncome() {
-        return driverIncome;
+        return Utility.getInstance().round(getDriverPay() + getTip(),2);
     }
 
     public void setDriverIncome(Double driverIncome) {
@@ -192,7 +211,11 @@ public class DriverPayoutEntity{
     }
 
     public Double getDriverCash() {
-        return driverCash;
+        Double cash = 0.0;
+        if(getPaymentMethod()!=null && getPaymentMethod().equalsIgnoreCase("CASH")){
+            cash = Utility.getInstance().round(getTip() + getTotalSale(),2);
+        }
+        return cash;
     }
 
     public void setDriverCash(Double driverCash) {
@@ -200,7 +223,7 @@ public class DriverPayoutEntity{
     }
 
     public Double getDriverPayout() {
-        return driverPayout;
+        return Utility.getInstance().round(getDriverIncome() - getDriverCash(),2);
     }
 
     public void setDriverPayout(Double driverPayout) {

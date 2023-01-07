@@ -31,6 +31,7 @@ public class Data {
     private Double dataDouble = null;
     private Integer dataInteger = null;
     private Long dataLong = null;
+    private Boolean dataBoolean = null;
 
     /**
      * No args constructor for use in serialization
@@ -73,6 +74,15 @@ public class Data {
     public Data(Long dataLong) {
         super();
         this.dataLong = dataLong;
+    }
+
+    /**
+     *
+     * @param dataBoolean
+     */
+    public Data(Boolean dataBoolean) {
+        super();
+        this.dataBoolean = dataBoolean;
     }
 
     /**
@@ -130,11 +140,23 @@ public class Data {
         return this;
     }
 
+    public Boolean getdataBoolean() {
+        return dataBoolean;
+    }
+    public void setdataBoolean(Boolean dataBoolean){
+        this.dataBoolean = dataBoolean;
+    }
+    public Data withdataBoolean(Boolean dataBoolean){
+        this.dataBoolean = dataBoolean;
+        return this;
+    }
+
     public String getDataAsString(){
         if(dataString!=null) return dataString;
         if(dataDouble!=null) return String.valueOf(dataDouble);
         if(dataInteger!=null) return String.valueOf(dataInteger);
         if(dataLong!=null) return String.valueOf(dataLong);
+        if(dataBoolean!=null) return String.valueOf(dataBoolean);
         return null;
     }
 

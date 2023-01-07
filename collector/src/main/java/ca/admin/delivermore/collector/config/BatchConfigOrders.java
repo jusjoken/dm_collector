@@ -2,9 +2,13 @@ package ca.admin.delivermore.collector.config;
 
 import ca.admin.delivermore.collector.data.Config;
 import ca.admin.delivermore.collector.data.entity.OrderDetail;
+import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import ca.admin.delivermore.collector.data.service.OrderDetailLoader;
 import ca.admin.delivermore.collector.data.service.OrderDetailRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -19,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableBatchProcessing
 @AllArgsConstructor
+@Log4j2
 public class BatchConfigOrders {
 
     private JobBuilderFactory jobBuilderFactory;
@@ -28,7 +33,7 @@ public class BatchConfigOrders {
     @Bean
     public ListItemReader<OrderDetail> orderDetailItemReader(){
         if(Config.getInstance().getRunOrderJob()){
-            System.out.println("BatchConfigOrders: orderDetailItemReader");
+            log.info("BatchConfigOrders: orderDetailItemReader");
             OrderDetailLoader orderDetailLoader = new OrderDetailLoader();
             orderDetailLoader.loadFromCSV("global_restaurants_orders.csv");
             return new ListItemReader<OrderDetail>(orderDetailLoader.getOrderDetailList());
@@ -63,7 +68,7 @@ public class BatchConfigOrders {
     @Bean
     public Job orderDetailsJob(){
         if(Config.getInstance().getRunOrderJob()){
-            System.out.println("BatchConfigRestaurant: orderDetailsJob");
+            log.info("BatchConfigRestaurant: orderDetailsJob");
             return jobBuilderFactory.get("orderDetailJob")
                     .incrementer(new RunIdIncrementer())
                     .flow(orderDetailStep())

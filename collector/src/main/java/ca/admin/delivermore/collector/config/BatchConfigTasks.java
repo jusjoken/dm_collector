@@ -39,7 +39,7 @@ public class BatchConfigTasks {
         if(Config.getInstance().getRunTaskJob()){
             LocalDateTime maxDateTime = taskDetailRepository.getMaxDate();
             //Long maxJobId = taskDetailRepository.getMaxSuccessfulJobId();
-            //System.out.println("taskItemReader: maxJobId:" + maxJobId);
+            //log.info("taskItemReader: maxJobId:" + maxJobId);
             restClientService = new RestClientService();
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-08-14"),LocalDate.parse("2022-08-15")));
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-08-14"),LocalDate.now()));

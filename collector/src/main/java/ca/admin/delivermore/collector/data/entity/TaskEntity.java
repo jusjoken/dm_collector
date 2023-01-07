@@ -1,5 +1,6 @@
 package ca.admin.delivermore.collector.data.entity;
 
+import ca.admin.delivermore.collector.data.Config;
 import ca.admin.delivermore.collector.data.Utility;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
@@ -8,25 +9,30 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import ca.admin.delivermore.collector.data.entity.DriverPayoutEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @IdClass(TaskEntityPk.class)
 public class TaskEntity{
     //TODO: add job type to allow pickup or deliver in task entity - then filter DriverPayouts
 
+    @Transient
+    private Logger log = LoggerFactory.getLogger(TaskEntity.class);
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TaskEntity that = (TaskEntity) o;
-        return Objects.equals(source, that.source) && Objects.equals(sourceId, that.sourceId) && Objects.equals(jobId, that.jobId) && Objects.equals(lastUpdated, that.lastUpdated) && Objects.equals(restaurantName, that.restaurantName) && Objects.equals(jobStatusName, that.jobStatusName) && Objects.equals(customerUsername, that.customerUsername) && Objects.equals(completedDate, that.completedDate) && Objects.equals(creationDate, that.creationDate) && Objects.equals(tip, that.tip) && Objects.equals(notes, that.notes) && Objects.equals(tipInNotesIssue, that.tipInNotesIssue) && Objects.equals(templateId, that.templateId) && Objects.equals(jobStatus, that.jobStatus) && Objects.equals(restaurantId, that.restaurantId) && Objects.equals(customerEmail, that.customerEmail) && Objects.equals(customerId, that.customerId) && Objects.equals(customerPhone, that.customerPhone) && Objects.equals(jobAddress, that.jobAddress) && Objects.equals(jobDescription, that.jobDescription) && Objects.equals(paymentMethod, that.paymentMethod) && Objects.equals(receiptTotal, that.receiptTotal) && Objects.equals(paidToVendor, that.paidToVendor) && Objects.equals(deliveryFee, that.deliveryFee) && Objects.equals(serviceFeePercent, that.serviceFeePercent) && Objects.equals(serviceFee, that.serviceFee) && Objects.equals(totalFees, that.totalFees) && Objects.equals(driverPay, that.driverPay) && Objects.equals(feeBalance, that.feeBalance) && Objects.equals(totalSale, that.totalSale) && Objects.equals(dispatcherId, that.dispatcherId) && Objects.equals(teamId, that.teamId) && Objects.equals(fleetId, that.fleetId) && Objects.equals(fleetName, that.fleetName) && Objects.equals(formId, that.formId) && Objects.equals(jobLatitude, that.jobLatitude) && Objects.equals(jobLongitude, that.jobLongitude) && Objects.equals(orderId, that.orderId) && Objects.equals(autoAssignment, that.autoAssignment) && Objects.equals(userId, that.userId) && Objects.equals(createdBy, that.createdBy) && Objects.equals(globalSubtotal, that.globalSubtotal) && Objects.equals(globalTotalTaxes, that.globalTotalTaxes) && Objects.equals(commission, that.commission) && Objects.equals(totalIncome, that.totalIncome) && Objects.equals(deliveryFeeFromVendor, that.deliveryFeeFromVendor) && Objects.equals(driverIncome, that.driverIncome) && Objects.equals(driverCash, that.driverCash) && Objects.equals(driverPayout, that.driverPayout);
+        return source.equals(that.source) && sourceId.equals(that.sourceId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(source, sourceId, jobId, lastUpdated, restaurantName, jobStatusName, customerUsername, completedDate, creationDate, tip, notes, tipInNotesIssue, templateId, jobStatus, restaurantId, customerEmail, customerId, customerPhone, jobAddress, jobDescription, paymentMethod, receiptTotal, paidToVendor, deliveryFee, serviceFeePercent, serviceFee, totalFees, driverPay, feeBalance, totalSale, dispatcherId, teamId, fleetId, fleetName, formId, jobLatitude, jobLongitude, orderId, autoAssignment, userId, createdBy, globalSubtotal, globalTotalTaxes, commission, totalIncome, deliveryFeeFromVendor, driverIncome, driverCash, driverPayout);
+        return Objects.hash(source, sourceId);
     }
 
     @Id
@@ -72,6 +78,12 @@ public class TaskEntity{
 
     @CsvBindByName(column = "tipInNotesIssue")
     private Boolean tipInNotesIssue;
+
+    @CsvBindByName(column = "webOrder")
+    private Boolean webOrder = Boolean.FALSE;
+
+    @CsvBindByName(column = "feesOnly")
+    private Boolean feesOnly = Boolean.FALSE;
 
     @CsvBindByName(column = "templateId")
     private String templateId = "";
@@ -164,6 +176,22 @@ public class TaskEntity{
 
     public void setPosPayment(Boolean posPayment) {
         this.posPayment = posPayment;
+    }
+
+    public Boolean getWebOrder() {
+        return webOrder;
+    }
+
+    public void setWebOrder(Boolean webOrder) {
+        this.webOrder = webOrder;
+    }
+
+    public Boolean getFeesOnly() {
+        return feesOnly;
+    }
+
+    public void setFeesOnly(Boolean feesOnly) {
+        this.feesOnly = feesOnly;
     }
 
     public String getSource() {
@@ -577,7 +605,7 @@ public class TaskEntity{
     public Boolean updateGlobalData(OrderDetail orderDetail){
         Boolean skipGlobal = Boolean.FALSE;
         if(orderDetail==null){
-            System.out.println("getTaskEntity: jobId:" + jobId + " orderDetail was null for orderId:" + longOrderId);
+            log.info("getTaskEntity: jobId:" + jobId + " orderDetail was null for orderId:" + longOrderId);
             skipGlobal = Boolean.TRUE;
             setTotalSale(0.0);
             setGlobalSubtotal(0.0);
@@ -614,14 +642,33 @@ public class TaskEntity{
         setTotalIncome(Utility.getInstance().round(getFeeBalance() + getCommission(),2));
 
         //provide calculated fields for driver payout
-        //System.out.println("setDriverIncome for task:" + jobId + " getDriverPay:" + taskEntity.getDriverPay() + " getTip" + taskEntity.getTip());
+        //Moved these driver payout calculations to the fields inside DriverPayoutEntity
+        /*
         setDriverIncome(Utility.getInstance().round(getDriverPay() + getTip(),2));
         setDriverCash(0.0); //default it to zero then if CASH then calculate it
         if(getPaymentMethod()!=null && getPaymentMethod().equalsIgnoreCase("CASH")){
-            //System.out.println("setDriverCash for task:" + jobId + " getTotalSale:" + taskEntity.getTotalSale() + " getTip" + taskEntity.getTip());
             setDriverCash(Utility.getInstance().round(getTip() + getTotalSale(),2));
         }
         setDriverPayout(Utility.getInstance().round(getDriverIncome() - getDriverCash(),2));
+         */
+    }
+
+    public String getTaskTypeName(){
+        if(createdBy.equals(0L) || createdBy.equals(1L)) { //Admin or Manager created task
+            return Config.TaskType.Custom.toString();
+        }else if(createdBy.equals(3L)) { //Form created tasks
+            return Config.TaskType.Form.toString();
+        }else if(createdBy.equals(5L)) { //API created tasks
+            if(orderId.equals("0")){ //orderId is zero for custom API created tasks
+                return Config.TaskType.Custom.toString();
+            }else{
+                return Config.TaskType.Form.toString();
+            }
+        }else if(createdBy.equals(43L)) { //Global created tasks
+            return Config.TaskType.Global.toString();
+        }else{
+            return Config.TaskType.Custom.toString();
+        }
     }
 
     public DriverPayoutEntity updateDriverPayoutEntity(){
@@ -640,9 +687,9 @@ public class TaskEntity{
                 getFleetName(),
                 getDriverIncome(),
                 getDriverCash(),
-                getDriverPayout());
+                getDriverPayout(),
+                getWebOrder());
     }
-
 
     @Override
     public String toString() {

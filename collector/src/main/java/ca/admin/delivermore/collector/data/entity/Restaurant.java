@@ -26,6 +26,8 @@ public class Restaurant{
 
     private Double deliveryFeeFromVendor = 0.0;
 
+    private Double deliveryFeeFromVendorWebOrder = 0.0;
+
     private String globalAuthCode = "";
 
     @Column(name = "start_day_offset", nullable = false)
@@ -218,6 +220,14 @@ public class Restaurant{
 
     public void setDeliveryFeeFromVendor(Double deliveryFeeFromVendor) {
         this.deliveryFeeFromVendor = deliveryFeeFromVendor;
+    }
+
+    public Double getDeliveryFeeFromVendorWebOrder() {
+        return deliveryFeeFromVendorWebOrder;
+    }
+
+    public void setDeliveryFeeFromVendorWebOrder(Double deliveryFeeFromVendorWebOrder) {
+        this.deliveryFeeFromVendorWebOrder = deliveryFeeFromVendorWebOrder;
     }
 
     public Double getCommissionPerDelivery() {
