@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -49,7 +50,7 @@ public class RestClientService implements Serializable {
         String urlExtra = "/get_all_tasks";
         String urlFull = tookan_baseUrl + urlExtra;
 
-        log.info("Fetching all Task objects through Tookan REST..");
+        //log.info("Fetching all Task objects through Tookan REST..");
 
         //List<Task> tasks = new ArrayList<>();
         Boolean lastPage = Boolean.FALSE;
@@ -66,7 +67,7 @@ public class RestClientService implements Serializable {
                     .body(BodyInserters.fromValue(getTaskHeaderBody(fromDate,toDate,currentPage.toString())));
 
             // do fetch and map result
-            log.info("taskList: gettingJSON");
+            //log.info("taskList: gettingJSON");
             String taskString = spec.retrieve().toEntity(String.class).block().getBody();
             //TODO: check return status
             //log.info("taskList String:" + taskString);
@@ -78,13 +79,13 @@ public class RestClientService implements Serializable {
                 e.printStackTrace();
             }
             if(taskList==null){
-                log.info("taskList: No tasks found");
+                //log.info("taskList: No tasks found");
             }else{
                 log.info("taskList: processing page " + currentPage + " of " + taskList.getTotalPageCount() + " pages");
                 //tasks.addAll(taskList.getData());
-                //TODO: get the Task Details for each task
                 //List<Long> tempList = new ArrayList<>();
                 //tempList.add(436403278L);
+                //TODO: check if on the first run there are actually tasks - do not call taskdetails if none
                 taskDetails.addAll(getTaskDetails(taskList.getTaskIDs(maxJobId)));
                 //taskDetails.addAll(getTaskDetails(tempList));
 
@@ -103,7 +104,7 @@ public class RestClientService implements Serializable {
 
     private String getTaskHeaderBody(LocalDate fromDate, LocalDate toDate, String curPage){
 
-        log.info("getTaskHeaderBody: fromDate:" + fromDate.toString() + " toDate:" + toDate.toString());
+        //log.info("getTaskHeaderBody: fromDate:" + fromDate.toString() + " toDate:" + toDate.toString());
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode bodyValues = mapper.createObjectNode();
@@ -135,7 +136,7 @@ public class RestClientService implements Serializable {
         String urlExtra = "/get_job_details";
         String urlFull = tookan_baseUrl + urlExtra;
 
-        log.info("Fetching Task Details through Tookan REST..");
+        //log.info("Fetching Task Details through Tookan REST..");
 
         WebClient myWebClient = WebClient.builder()
             .exchangeStrategies(ExchangeStrategies.builder()
@@ -154,7 +155,7 @@ public class RestClientService implements Serializable {
                 .body(BodyInserters.fromValue(getTaskDetailHeaderBody(taskIDs)));
 
         // do fetch and map result
-        log.info("taskDetailList: gettingJSON");
+        //log.info("taskDetailList: gettingJSON");
         String taskDetailString = spec.retrieve().toEntity(String.class).block().getBody();
         //TODO: check return status
         log.info("taskDetailList String:" + taskDetailString);
@@ -196,15 +197,20 @@ public class RestClientService implements Serializable {
 
     }
 
-
     public Boolean hasOrderId(String orderID) {
+        TaskByOrderDetail taskByOrderDetail = getTaskByOrderId(orderID);
+        if(taskByOrderDetail==null) return Boolean.FALSE;
+        return Boolean.TRUE;
+    }
 
-        List<TaskDetail> taskDetails = new ArrayList<>();
+    public TaskByOrderDetail getTaskByOrderId(String orderID) {
+
+        TaskByOrderDetail taskByOrderDetail = null;
 
         String urlExtra = "/get_job_details_by_order_id";
         String urlFull = tookan_baseUrl + urlExtra;
 
-        log.info("hasOrderId: Fetching Task Details by orderId through Tookan REST..");
+        //log.info("getTaskByOrderId: Fetching Task Details by orderId through Tookan REST..");
 
         WebClient myWebClient = WebClient.builder()
                 .exchangeStrategies(ExchangeStrategies.builder()
@@ -223,10 +229,10 @@ public class RestClientService implements Serializable {
                 .body(BodyInserters.fromValue(getTaskDetailByOrderIdHeaderBody(orderID)));
 
         // do fetch and map result
-        log.info("hasOrderId: taskDetailList: gettingJSON");
+        //log.info("getTaskByOrderId: taskDetailList: gettingJSON");
         String taskDetailString = spec.retrieve().toEntity(String.class).block().getBody();
         //TODO: check return status
-        log.info("hasOrderId: taskDetailList String:" + taskDetailString);
+        log.info("getTaskByOrderId: taskDetailString:" + taskDetailString);
         ObjectMapper objectMapper = new ObjectMapper();
         TaskByOrderResult taskDetailList = null;
         try {
@@ -235,15 +241,19 @@ public class RestClientService implements Serializable {
             e.printStackTrace();
         }
         if(taskDetailList==null){
-            return Boolean.FALSE;
+            return null;
         }else{
             if(taskDetailList.getStatus().equals(200L)){
-                log.info("hasOrderId: global order id:" + orderID + " found in Tookan");
-                return Boolean.TRUE;
+                //log.info("getTaskByOrderId: global order id:" + orderID + " found in Tookan");
+                if(taskDetailList.getData().size()>0){
+                    taskByOrderDetail = taskDetailList.getData().get(0);
+                    log.info("getTaskByOrderId: global order id:" + orderID + " task found:" + taskByOrderDetail.getJobId());
+                    return taskByOrderDetail;
+                }
             }
         }
-        log.info("hasOrderId: global order id:" + orderID + " NOT found in Tookan");
-        return Boolean.FALSE;
+        log.info("getTaskByOrderId: global order id:" + orderID + " NOT found in Tookan");
+        return null;
     }
 
     private String getTaskDetailByOrderIdHeaderBody(String orderID){
@@ -280,7 +290,7 @@ public class RestClientService implements Serializable {
                 .body(BodyInserters.fromValue(getTaskCountHeaderBody(fromDate,toDate)));
 
         // do fetch and map result
-        log.info("getTaskCount: gettingJSON");
+        //log.info("getTaskCount: gettingJSON");
         String taskCountString = spec.retrieve().toEntity(String.class).block().getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         TaskCountResult taskCountResult = null;
@@ -310,7 +320,7 @@ public class RestClientService implements Serializable {
 
     private String getTaskCountHeaderBody(LocalDate fromDate, LocalDate toDate){
 
-        log.info("getTaskCountHeaderBody: fromDate:" + fromDate.toString() + " toDate:" + toDate.toString());
+        //log.info("getTaskCountHeaderBody: fromDate:" + fromDate.toString() + " toDate:" + toDate.toString());
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode bodyValues = mapper.createObjectNode();
@@ -357,7 +367,7 @@ public class RestClientService implements Serializable {
                 .body(BodyInserters.fromValue(getDriversHeaderBody()));
 
         // do fetch and map result
-        log.info("driversList: gettingJSON");
+        //log.info("driversList: gettingJSON");
         String driversString = spec.retrieve().toEntity(String.class).block().getBody();
         //TODO: check return status
         //log.info("driversList String:" + driversString);
@@ -401,7 +411,7 @@ public class RestClientService implements Serializable {
             log.info("getGlobalOrderJson: No Auth Code available for restaurant:" + restaurant.getName());
             return null;
         }
-        log.info("Fetching Global Orders through Gloria Food REST..");
+        //log.info("Fetching Global Orders through Gloria Food REST..");
 
         WebClient myWebClient = WebClient.builder()
                 .exchangeStrategies(ExchangeStrategies.builder()
@@ -422,19 +432,28 @@ public class RestClientService implements Serializable {
 
         // do fetch and map result
         //String globalOrderString = spec.retrieve().toEntity(String.class).block().getBody();
-        String globalOrderString = spec.retrieve()
-                .toEntity(String.class)
-                .filter(
-                        entity ->
-                                entity.getStatusCode().is2xxSuccessful()
-                                        && entity.getBody() != null
-                )
-                .block().getBody();
-
-        log.info("getGlobalOrderJson:  globalOrderString:" + globalOrderString);
-        if(globalOrderString.contains("\"count\":0,\"orders\":[]")){
-            log.info("...No orders returned for restaurant:" + restaurant.getName());
+        String globalOrderString = null;
+        //TODO: testing new try catch for global - add to others if no issues
+        try {
+            globalOrderString = spec.retrieve()
+                    .toEntity(String.class)
+                    .filter(
+                            entity ->
+                                    entity.getStatusCode().is2xxSuccessful()
+                                            && entity.getBody() != null
+                    )
+                    .block().getBody();
+        } catch (WebClientResponseException e) {
+            log.error("getGlobalOrderJson: error response:" + e);
             return null;
+        }
+
+        if(globalOrderString.contains("\"count\":0,\"orders\":[]")){
+            //log.info("...No orders returned for restaurant:" + restaurant.getName());
+            return null;
+        }else{
+            log.info("..Processing order for restaurant:" + restaurant.getName() + " result:  globalOrderString:" + globalOrderString);
+
         }
         //make sure only valid characters as emoji's cause error in saving to database
         String regex = "[^\\p{L}\\p{N}\\p{P}\\p{Z}]";
@@ -444,5 +463,59 @@ public class RestClientService implements Serializable {
 
     }
 
+    /**
+     * Returns parsed {@link TaskDetail} objects from the REST service.
+     *
+     * Useful when the response data has a known structure.
+     */
+    public void updateTaskDescriptiion(Long taskID, String description) {
+
+        String urlExtra = "/edit_task";
+        String urlFull = tookan_baseUrl + urlExtra;
+
+        //log.info("Updating Task Description through Tookan REST..");
+
+        RequestHeadersSpec<?> spec = WebClient.create().post()
+                .uri(urlFull)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(getUpdateTaskDescHeaderBody(taskID, description)));
+
+        // do fetch and map result
+        //log.info("updateTaskDescriptiion: gettingJSON");
+        String responseString = spec.retrieve().toEntity(String.class).block().getBody();
+        log.info("updateTaskDescriptiion response:" + responseString);
+        ObjectMapper objectMapper = new ObjectMapper();
+        TaskEditResponse taskEditResponse = null;
+        try {
+            taskEditResponse = objectMapper.readValue(responseString,TaskEditResponse.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        if(taskEditResponse==null){
+
+        }else{
+            if(taskEditResponse.getStatus().equals(200L)){
+                log.info("updateTaskDescriptiion: description for task id:" + taskID + " updated in Tookan");
+                return;
+            }
+        }
+
+        log.info("updateTaskDescriptiion: failed to update description for task id:" + taskID);
+        return;
+    }
+
+    private String getUpdateTaskDescHeaderBody(Long taskID, String description){
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode bodyValues = mapper.createObjectNode();
+
+        bodyValues.put("api_key", tookan_api);
+        bodyValues.put("job_id", taskID);
+        bodyValues.put("job_description", description);
+
+        return bodyValues.toString();
+
+    }
 
 }

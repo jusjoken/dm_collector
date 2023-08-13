@@ -9,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +121,8 @@ public class TaskEntity{
     private Double feeBalance = 0.0;
     @CsvBindByName(column = "totalSale")
     private Double totalSale = 0.0;
+    @CsvBindByName(column = "taxOnFees")
+    private Double taxOnFees = 0.0;
     @CsvBindByName(column = "dispatcherId")
     private Long dispatcherId;
     @CsvBindByName(column = "teamId")
@@ -410,6 +411,17 @@ public class TaskEntity{
         this.totalFees = totalFees;
     }
 
+    public Double getTaxOnFees() {
+        if(this.taxOnFees==null){
+            return 0.0;
+        }
+        return taxOnFees;
+    }
+
+    public void setTaxOnFees(Double taxOnFees) {
+        this.taxOnFees = taxOnFees;
+    }
+
     public Double getDriverPay() {
         return driverPay;
     }
@@ -610,6 +622,7 @@ public class TaskEntity{
             setTotalSale(0.0);
             setGlobalSubtotal(0.0);
             setGlobalTotalTaxes(0.0);
+            setTaxOnFees(0.0);
         }else{
             /*  DO NOT Update the payment method from Global as Tookan is the one we can edit after the fact
             if(getPaymentMethod()==null || getPaymentMethod().isEmpty()){
@@ -620,8 +633,13 @@ public class TaskEntity{
             setGlobalSubtotal(orderDetail.getSubtotal());
             setGlobalTotalTaxes(orderDetail.getTotalTaxes());
             setServiceFee(orderDetail.getServiceFee());
-            //totalSale for Global is subTotal + taxes + serviceFee + deliveryFee
-            setTotalSale(Utility.getInstance().round(orderDetail.getSubtotal() + orderDetail.getTotalTaxes() + orderDetail.getDeliveryFee() + orderDetail.getServiceFee(),2));
+            setTaxOnFees(orderDetail.getTaxOnFees());
+            //for ONLINE payments totalSale for Global is subTotal + taxes + serviceFee + deliveryFee
+            //for other payments this amount is set in TaskDetail using the tookan amount as it could be over ridden
+            if(getPaymentMethod().equals("ONLINE")){
+                //TODO:: note that the GlobalTax includes the taxOnFees value
+                setTotalSale(Utility.getInstance().round(orderDetail.getSubtotal() + orderDetail.getTotalTaxes() + orderDetail.getDeliveryFee() + orderDetail.getServiceFee(),2));
+            }
 
             if(getGlobalSubtotal()!=null){
                 setCommission(Utility.getInstance().round(getCommissionRate() * getGlobalSubtotal(),2));
@@ -718,6 +736,7 @@ public class TaskEntity{
                 ", serviceFeePercent=" + serviceFeePercent +
                 ", serviceFee=" + serviceFee +
                 ", totalFees=" + totalFees +
+                ", taxOnFees=" + taxOnFees +
                 ", driverPay=" + driverPay +
                 ", feeBalance=" + feeBalance +
                 ", totalSale=" + totalSale +

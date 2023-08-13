@@ -25,7 +25,7 @@ public class Config {
 
     private final Double serviceFeeGlobal = 11.0;
     private final Double serviceFeeCustom = 11.0;
-    private final Double serviceFeePhonein = 5.0;
+    private final Double serviceFeePhonein = 11.0;
 
     private String fromEmail = "tara.birch@delivermore.ca";
     private List<String> paymentMethods = new ArrayList<>(List.of("CASH", "CARD", "ONLINE"));
@@ -36,11 +36,14 @@ public class Config {
     private Boolean runTaskJob = Boolean.FALSE;
     private Boolean runRestaurantJob = Boolean.FALSE;
 
+    private Boolean runScheduleReportJob = Boolean.FALSE;
     private Boolean runDriverJobDb = null;
     private Boolean runOrderJobDb = null;
     private Boolean runGlobalOrderJobDb = null;
     private Boolean runTaskJobDb = null;
     private Boolean runRestaurantJobDb = null;
+
+    private Boolean runScheduleReportJobDb = null;
 
     private String QBOAppClientId = null;
     private String QBOAppClientSecret = null;
@@ -51,9 +54,12 @@ public class Config {
 
     private SettingRepository settingRepository;
 
+    private static String emailNotification = "EmailNotification";
+
     public static Config instance = null;
 
     public Config() {
+        log.info("Config constructor called");
     }
 
     public static Config getInstance() {
@@ -109,6 +115,14 @@ public class Config {
 
     public void setRunRestaurantJob(Boolean runRestaurantJob) {
         this.runRestaurantJob = runRestaurantJob;
+    }
+
+    public Boolean getRunScheduleReportJob() {
+        return runScheduleReportJob;
+    }
+
+    public void setRunScheduleReportJob(Boolean runScheduleReportJob) {
+        this.runScheduleReportJob = runScheduleReportJob;
     }
 
     public Double getDriverPayForDelivery() {
@@ -181,6 +195,13 @@ public class Config {
                 }else{
                     return runRestaurantJobDb;
                 }
+            }else if(jobId.equals("scheduleReportJob")){
+                if(runScheduleReportJobDb==null){
+                    runScheduleReportJobDb = checkJobDb(jobId);
+                    return runScheduleReportJobDb;
+                }else{
+                    return runScheduleReportJobDb;
+                }
             }
         }
         return Boolean.FALSE;
@@ -249,16 +270,29 @@ public class Config {
         if(settingEntity==null) return null;
         return settingEntity.getValue();
     }
+
+    private Boolean getSettingAsBoolean(String section, String name, Boolean defaultValue){
+        String tempValue = getSetting(section, name);
+        if(tempValue==null) return defaultValue;
+        Boolean tempBool = Boolean.valueOf(tempValue);
+        if(tempBool==null) return defaultValue;
+        return tempBool;
+    }
+
     public void setSetting(String section, String name, String value){
         setSetting(section,name,null,value);
     }
     //TODO: add generic call to handle List, Double, Integer types
     public void setSetting(String section, String name, String description, String value){
+        log.info("setSetting: section:" + section + " name:" + name + " description:" + description + " value:" + value);
         settingRepository = CollectorRegistry.getBean(SettingRepository.class);
+        log.info("setSetting: prior to running find");
         SettingEntity settingEntity = settingRepository.findBySectionAndName(section,name);
         if(settingEntity==null){
+            log.info("setSetting: find returned null. Creating new setting");
             settingEntity = new SettingEntity(section,name,description,value, SettingEntity.ValueType.STRING);
         }else{
+            log.info("setSetting: find returned:" + settingEntity.toString());
             settingEntity.setValue(value);
             if(description!=null){
                 settingEntity.setDescription(description);
@@ -273,6 +307,7 @@ public class Config {
     }
 
     public void setQBOToken(String value){
+        log.info("setQBOToken: value:" + value);
         setSetting("QBO", "Token","Token for QBO API calls",value );
     }
 
@@ -281,6 +316,7 @@ public class Config {
     }
 
     public void setQBORefreshToken(String value){
+        log.info("setQBORefreshToken: value:" + value);
         setSetting("QBO","RefreshToken","Refresh Token for QBO API calls",value);
     }
 
@@ -315,5 +351,15 @@ public class Config {
     public void setQBOAccountNumber(String accountName, String value){
         setSetting("QBOAccount",accountName,null,value);
     }
+
+    //Notification Settings
+    public Boolean getEmailNotifications(String driverId, Boolean defaultValue){
+        return getSettingAsBoolean(driverId, emailNotification, defaultValue);
+    }
+
+    public void setEmailNotifications(String driverId, Boolean value){
+        setSetting(driverId,emailNotification,"Send notifications via email",value.toString());
+    }
+
 
 }

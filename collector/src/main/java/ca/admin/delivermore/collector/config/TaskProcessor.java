@@ -32,7 +32,7 @@ public class TaskProcessor implements ItemProcessor<TaskDetail, TaskEntity> {
     public TaskEntity process(TaskDetail taskDetail) throws Exception {
         if(taskDetailRepository.hasSuccessfulJobID(taskDetail.getJobId())){
             //skip
-            log.info("TaskProcessor: process: skipping already successful task:" + taskDetail.getJobId());
+            //log.info("TaskProcessor: process: skipping already successful task:" + taskDetail.getJobId());
             return null;
         }
         log.info("TaskProcessor: processing: task:" + taskDetail.getJobId());

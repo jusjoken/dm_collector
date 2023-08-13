@@ -5,9 +5,13 @@ import javax.annotation.Generated;
 import javax.persistence.*;
 
 import ca.admin.delivermore.collector.data.Role;
+import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import com.fasterxml.jackson.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -107,10 +111,16 @@ public class Driver {
 
     @JsonIgnore
     private String hashedPassword;
+
+    @JsonIgnore
+    private Boolean loginAllowed = Boolean.FALSE;
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Role> roles;
+
+    @Transient
+    private Logger log = LoggerFactory.getLogger(Driver.class);
 
     /**
      * No args constructor for use in serialization
@@ -453,6 +463,9 @@ public class Driver {
      */
 
     public String getHashedPassword() {
+        if(hashedPassword==null){
+            return "";
+        }
         return hashedPassword;
     }
 
@@ -466,6 +479,30 @@ public class Driver {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public Boolean isUser(){
+        return roles.contains(Role.USER);
+    }
+    public Boolean isManager(){
+        return roles.contains(Role.MANAGER);
+    }
+    public Boolean isAdmin(){
+        return roles.contains(Role.ADMIN);
+    }
+
+    public Boolean getLoginAllowed() {
+        if(loginAllowed==null) return Boolean.FALSE;
+        return loginAllowed;
+    }
+
+    public void setLoginAllowed(Boolean loginAllowed) {
+        this.loginAllowed = loginAllowed;
+    }
+
+    public Boolean hasPassword(){
+        if(this.hashedPassword==null || this.hashedPassword.isEmpty()) return Boolean.FALSE;
+        return Boolean.TRUE;
     }
 
     @Override
@@ -496,6 +533,14 @@ public class Driver {
                 ", timezone='" + timezone + '\'' +
                 ", fleetType=" + fleetType +
                 ", isAvailable=" + isAvailable +
+                ", hashedPassword='" + hashedPassword + '\'' +
+                ", loginAllowed=" + loginAllowed +
+                ", roles=" + roles +
+                ", user=" + isUser() +
+                ", manager=" + isManager() +
+                ", admin=" + isAdmin() +
+                ", hasPassword=" + hasPassword() +
+                ", isActivePresentation='" + getIsActivePresentation() + '\'' +
                 '}';
     }
 
@@ -507,12 +552,59 @@ public class Driver {
     public Driver updateDriverIsActive(Driver checkDriver, List<Driver> validDrivers){
         for (Driver driver: validDrivers) {
             if (driver.getFleetId().equals(checkDriver.getFleetId())) {
+                log.info("updateDriverIsActive: setting existing driver to active:" + driver.getName());
                 checkDriver.setIsActive(1L);
                 return checkDriver;
             }
         }
+        log.info("updateDriverIsActive: driver no longer active:" + checkDriver.getName());
         checkDriver.setIsActive(0L);
+        //do not disable login for the Local Admin user that will never be in Tookan
+        if(checkDriver.fleetId>10L){ //allow 0 to 10 for local Ids Admin, Manager etc for testing
+            //disable login if the user have been blocked in Tookan
+            log.info("updateDriverIsActive: disabling login for:" + checkDriver.getName());
+            checkDriver.setLoginAllowed(Boolean.FALSE);
+        }
         return checkDriver;
     }
 
+    public void updateDriverTookanOnly(Driver updated){
+        this.deviceType = updated.deviceType;
+        this.totalRating = updated.totalRating;
+        this.totalRatedTasks = updated.totalRatedTasks;
+        this.isActive = updated.isActive;
+        this.hasGpsAccuracy = updated.hasGpsAccuracy;
+        this.username = updated.username;
+        this.name = updated.name;
+        this.loginId = updated.loginId;
+        this.transportType = updated.transportType;
+        this.transportDesc = updated.transportDesc;
+        this.license = updated.license;
+        this.email = updated.email;
+        this.phone = updated.phone;
+        this.batteryLevel = updated.batteryLevel;
+        this.registrationStatus = updated.registrationStatus;
+        this.latitude = updated.latitude;
+        this.longitude = updated.longitude;
+        this.tags = updated.tags;
+        this.fleetThumbImage = updated.fleetThumbImage;
+        this.fleetImage = updated.fleetImage;
+        this.status = updated.status;
+        this.timezone = updated.timezone;
+        this.fleetType = updated.fleetType;
+        this.isAvailable = updated.isAvailable;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Driver driver = (Driver) o;
+        return fleetId.equals(driver.fleetId) && Objects.equals(deviceType, driver.deviceType) && Objects.equals(totalRating, driver.totalRating) && Objects.equals(totalRatedTasks, driver.totalRatedTasks) && Objects.equals(isActive, driver.isActive) && Objects.equals(hasGpsAccuracy, driver.hasGpsAccuracy) && Objects.equals(username, driver.username) && Objects.equals(name, driver.name) && Objects.equals(loginId, driver.loginId) && Objects.equals(transportType, driver.transportType) && Objects.equals(transportDesc, driver.transportDesc) && Objects.equals(license, driver.license) && Objects.equals(email, driver.email) && Objects.equals(phone, driver.phone) && Objects.equals(batteryLevel, driver.batteryLevel) && Objects.equals(registrationStatus, driver.registrationStatus) && Objects.equals(latitude, driver.latitude) && Objects.equals(longitude, driver.longitude) && Objects.equals(tags, driver.tags) && Objects.equals(fleetThumbImage, driver.fleetThumbImage) && Objects.equals(fleetImage, driver.fleetImage) && Objects.equals(status, driver.status) && Objects.equals(timezone, driver.timezone) && Objects.equals(fleetType, driver.fleetType) && Objects.equals(isAvailable, driver.isAvailable) && Objects.equals(hashedPassword, driver.hashedPassword) && Objects.equals(loginAllowed, driver.loginAllowed) && Objects.equals(roles, driver.roles) && Objects.equals(log, driver.log);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fleetId, deviceType, totalRating, totalRatedTasks, isActive, hasGpsAccuracy, username, name, loginId, transportType, transportDesc, license, email, phone, batteryLevel, registrationStatus, latitude, longitude, tags, fleetThumbImage, fleetImage, status, timezone, fleetType, isAvailable, hashedPassword, loginAllowed, roles, log);
+    }
 }

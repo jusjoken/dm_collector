@@ -20,8 +20,8 @@ public class TaskByOrderResult {
     private String message;
     @JsonProperty("status")
     private Long status;
-    @JsonIgnore
-    private Object data = null;
+    @JsonProperty("data")
+    private List<TaskByOrderDetail> data = null;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -40,7 +40,7 @@ public class TaskByOrderResult {
      * @param message
      * @param status
      */
-    public TaskByOrderResult(String message, Long status, List<TaskDetail> data) {
+    public TaskByOrderResult(String message, Long status, List<TaskByOrderDetail> data) {
         super();
         this.message = message;
         this.status = status;
@@ -78,20 +78,14 @@ public class TaskByOrderResult {
     }
 
     @JsonProperty("data")
-    public Object getData() {
+    public List<TaskByOrderDetail> getData() {
         return data;
     }
 
     @JsonProperty("data")
-    public void setData(Object data) {
+    public void setData(List<TaskByOrderDetail> data) {
         this.data = data;
     }
-
-    public TaskByOrderResult withData(Object data) {
-        this.data = data;
-        return this;
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;

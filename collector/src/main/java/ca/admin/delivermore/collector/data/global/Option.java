@@ -24,7 +24,7 @@ public class Option {
     @JsonProperty("name")
     private String name;
     @JsonProperty("price")
-    private Long price;
+    private Double price;
     @JsonProperty("group_name")
     private String groupName;
     @JsonProperty("quantity")
@@ -51,7 +51,7 @@ public class Option {
      * @param id
      * @param type
      */
-    public Option(Long id, String name, Long price, String groupName, Long quantity, String type, Long typeId) {
+    public Option(Long id, String name, Double price, String groupName, Long quantity, String type, Long typeId) {
         super();
         this.id = id;
         this.name = name;
@@ -83,12 +83,12 @@ public class Option {
     }
 
     @JsonProperty("price")
-    public Long getPrice() {
+    public Double getPrice() {
         return price;
     }
 
     @JsonProperty("price")
-    public void setPrice(Long price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

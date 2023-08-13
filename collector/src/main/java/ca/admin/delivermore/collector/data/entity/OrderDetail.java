@@ -1,5 +1,6 @@
 package ca.admin.delivermore.collector.data.entity;
 
+import ca.admin.delivermore.collector.data.Utility;
 import com.opencsv.bean.CsvBindByName;
 
 import javax.persistence.*;
@@ -45,7 +46,13 @@ public class OrderDetail {
     @Column(name = "tip")
     private Double tip;
 
+    @Column(name = "tax_on_fees")
+    private Double taxOnFees = 0.0;
+
     private Long jsonSourceId = 0L; //used while loading from GlobalOrderJson to use to delete/mark complete the source json record
+
+    @Column(name = "order_text", length = 10000)
+    private String orderText;
 
     public Double getTip() {
         return tip;
@@ -57,6 +64,14 @@ public class OrderDetail {
 
     @Column(name = "client_name")
     private String clientName;
+
+    public String getOrderText() {
+        return orderText;
+    }
+
+    public void setOrderText(String orderText) {
+        this.orderText = orderText;
+    }
 
     public String getClientName() {
         return clientName;
@@ -156,6 +171,14 @@ public class OrderDetail {
         this.source = source;
     }
 
+    public Double getTaxOnFees() {
+        return Utility.getInstance().round(taxOnFees,2);
+    }
+
+    public void setTaxOnFees(Double taxOnFees) {
+        this.taxOnFees = Utility.getInstance().round(taxOnFees,2);
+    }
+
     @Override
     public String toString() {
         return "OrderDetail{" +
@@ -169,7 +192,11 @@ public class OrderDetail {
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", orderType='" + orderType + '\'' +
                 ", source=" + source +
+                ", tip=" + tip +
+                ", taxOnFees=" + taxOnFees +
                 ", jsonSourceId=" + jsonSourceId +
+                ", orderText='" + orderText + '\'' +
+                ", clientName='" + clientName + '\'' +
                 '}';
     }
 }

@@ -6,6 +6,7 @@ import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import ca.admin.delivermore.collector.data.service.*;
 import ca.admin.delivermore.collector.data.tookan.TaskDetail;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 @Configuration
 @EnableBatchProcessing
 @AllArgsConstructor
+@Log4j2
 public class BatchConfigTasks {
 
     private JobBuilderFactory jobBuilderFactory;
@@ -41,6 +43,7 @@ public class BatchConfigTasks {
             //Long maxJobId = taskDetailRepository.getMaxSuccessfulJobId();
             //log.info("taskItemReader: maxJobId:" + maxJobId);
             restClientService = new RestClientService();
+            log.info("taskItemReader: processing all tasks that are not already successful.");
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-08-14"),LocalDate.parse("2022-08-15")));
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-08-14"),LocalDate.now()));
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-09-24"),LocalDate.now()));

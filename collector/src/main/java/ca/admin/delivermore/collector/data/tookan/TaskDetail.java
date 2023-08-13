@@ -264,7 +264,9 @@ public class TaskDetail {
     private Boolean webOrder = Boolean.FALSE;
     private Boolean feesOnly = Boolean.FALSE;
     private Double tipGlobal = null;
+    private Double globalTotalPrice = null;
     private Double deliveryFee = 0.0;
+    private Double taxOnFees = 0.0;
     private Double receiptTotal = null;
     private String paymentMethod = null;
     private Double paidToVendor = null;
@@ -550,6 +552,10 @@ public class TaskDetail {
                     else if(customItem.getLabel().equals("Delivery_Fee")){
                         deliveryFee = getDouble(customItem.getData().getDataAsString());
                     }
+                    else if(customItem.getLabel().equals("Total_Price")){
+                        //use the value in tookan for non online items so manager can override that amount
+                        globalTotalPrice = getDouble(customItem.getData().getDataAsString());
+                    }
                     else if(customItem.getLabel().equals("Restaurant_Id")){
                         //make sure restaurantId is a long
                         restaurantIsGlobal = Boolean.TRUE;
@@ -589,6 +595,15 @@ public class TaskDetail {
             taskEntity.setTip(tipInNotes);
             //for global tasks overwrite with the global tip as it is more accurate
             if(taskType.equals(TaskType.GLOBAL) && tipGlobal!=null) taskEntity.setTip(Utility.getInstance().round(tipGlobal,2));
+            //for global tasks overwrite with the tookan global total price as it could have been overridden
+            if(taskType.equals(TaskType.GLOBAL)){
+                if(globalTotalPrice!=null){
+                    if(!paymentMethod.equals("ONLINE")){
+                        taskEntity.setTotalSale(Utility.getInstance().round(globalTotalPrice,2));                }
+                    }
+            }else{
+                taskEntity.setTotalSale(totalWithFees);
+            }
             taskEntity.setTipInNotesIssue(tipInNotesIssue);
             taskEntity.setTemplateId(templateId);
             taskEntity.setJobStatus(jobStatus);
@@ -604,7 +619,7 @@ public class TaskDetail {
             taskEntity.setDeliveryFee(deliveryFee);
             taskEntity.setServiceFeePercent(serviceFeePercent);
             taskEntity.setServiceFee(serviceFeeAmount);
-            taskEntity.setTotalSale(totalWithFees);
+            taskEntity.setTaxOnFees(taxOnFees);
             taskEntity.setDispatcherId(dispatcherId);
             taskEntity.setTeamId(teamId);
             taskEntity.setFleetId(fleetId);
@@ -769,6 +784,10 @@ public class TaskDetail {
 
     public Double getTotalWithFees() {
         return totalWithFees;
+    }
+
+    public Double getTaxOnFees() {
+        return taxOnFees;
     }
 
     //for completed tasks use the completed date/time otherwise use the creation date/time

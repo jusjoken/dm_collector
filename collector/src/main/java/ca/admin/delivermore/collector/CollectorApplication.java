@@ -36,6 +36,9 @@ public class CollectorApplication {
 			if(checkJob("taskJob", arg)){
 				Config.getInstance().setRunTaskJob(true);
 			}
+			if(checkJob("scheduleReportJob", arg)){
+				Config.getInstance().setRunScheduleReportJob(true);
+			}
 
 			//if(arg.contains("restaurantJob")) Config.getInstance().setRunRestaurantJob(true);
 		}

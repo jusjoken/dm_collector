@@ -8,6 +8,7 @@ import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import ca.admin.delivermore.collector.data.global.GlobalOrder;
 import ca.admin.delivermore.collector.data.global.GlobalOrderList;
 import ca.admin.delivermore.collector.data.service.*;
+import ca.admin.delivermore.collector.data.tookan.TaskByOrderDetail;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -55,6 +56,7 @@ public class BatchConfigGlobalOrders {
             List<GlobalOrderJson> allGlobalOrders = new ArrayList<>();
             restClientService = new RestClientService();
             //process all restaurants that have an Auth Code
+            log.info("globalOrderJsonItemReader: processing all restaurants. Details in log only for one that have data.");
             for (Restaurant restaurant: restaurantRepository.findAll()) {
                 if(restaurant.getGlobalAuthCode()!=null && !restaurant.getGlobalAuthCode().isEmpty()){
                     String tGlobalOrderJson = restClientService.getGlobalOrderJson(restaurant);
@@ -104,7 +106,7 @@ public class BatchConfigGlobalOrders {
         if(Config.getInstance().getRunGlobalOrderJob()){
             List<GlobalOrderJson> globalOrderJsonList = new ArrayList<>();
             globalOrderJsonList.addAll(globalOrderJsonRepository.getAllNewJson());
-            log.info("globalOrderItemReader: globalOrderJsonList: size:" + globalOrderJsonList.size());
+            //log.info("globalOrderItemReader: globalOrderJsonList: size:" + globalOrderJsonList.size());
             masterGlobalOrderJsonSource.addAll(globalOrderJsonList);
             List<OrderDetail> orderDetailList = new ArrayList<>();
 
@@ -135,12 +137,14 @@ public class BatchConfigGlobalOrders {
                                 taskDetailRepository.save(taskEntity);
                             }
                         }else{
-                            log.info("globalOrderItemReader: NOT found in database.  Checking Tookan API for order: " + orderDetail.getOrderId());
+                            //log.info("globalOrderItemReader: NOT found in database.  Checking Tookan API for order: " + orderDetail.getOrderId());
                             //perform extra check incase the database is just behind in processing
                             if(restClientService.hasOrderId(orderDetail.getOrderId().toString())){
-                                log.info("globalOrderItemReader: found order using Tookan API for order: " + orderDetail.getOrderId());
+                                //nothing to do here as tookan has the order
+                                //log.info("globalOrderItemReader: found order using Tookan API for order: " + orderDetail.getOrderId());
 
                             }else{
+                                //this likely does nothing as was put here to catch a Global to Tookan issue that was fixed by Global
                                 log.info("globalOrderItemReader: NOT found using Tookan API for order: " + orderDetail.getOrderId());
                                 //no tookan task found so send an email
                                 String emailBody = null;
@@ -171,10 +175,33 @@ public class BatchConfigGlobalOrders {
                                     customDelFee = orderDetail.getDeliveryFee() + orderDetail.getTotalTaxes();
                                 }
                                 emailBody = emailBody + "\nCustom info:\n receipt total: " + orderDetail.getSubtotal() + "\n del fee: " + customDelFee + " (includes del fee and taxes if any)";
+                                emailBody = emailBody + "\nExtra info:\n";
+                                emailBody = emailBody + "\nCustomer Address: " + globalOrder.getClientAddress();
+                                emailBody = emailBody + "\nFulfillAt: " + globalOrder.getFulfillAt();
+                                emailBody = emailBody + "\nTotal Price: " + globalOrder.getTotalPrice();
+
                                 emailService.sendMail("support@delivermore.ca", "Order missing task:" + orderDetail.getOrderId(), emailBody);
                                 log.info("globalOrderItemReader: missing order from tookan: " + emailBody);
                             }
                         }
+
+                        //need to see if this is for a non-partnered vendor where the order text needs sent to tookan descriptiion
+                        List<Restaurant> restaurants = restaurantRepository.findEffectiveByRestaurantId(orderDetail.getRestaurantId(), LocalDate.now());
+                        if(restaurants!=null && restaurants.size()>0){
+                            //log.info("globalOrderItemReader: checking if need to process OrderText for order:" + orderDetail.getOrderId());
+                            if(restaurants.get(0).getProcessOrderText()!=null && restaurants.get(0).getProcessOrderText()){
+                                //log.info("globalOrderItemReader: processing OrderText to update tookan task for order:" + orderDetail.getOrderId());
+                                TaskByOrderDetail taskByOrderDetail = restClientService.getTaskByOrderId(orderDetail.getOrderId().toString());
+                                if(taskByOrderDetail!=null){
+                                    Long jobId = taskByOrderDetail.getJobId();
+                                    String newDesc = orderDetail.getOrderText();
+                                    log.info("globalOrderItemReader: orderText created for order:" + orderDetail.getOrderId() + " jobId:" + jobId + " orderText:" + newDesc);
+                                    restClientService.updateTaskDescriptiion(jobId,newDesc);
+                                }
+                            }
+                        }
+
+
                         log.info("globalOrderItemReader: globalOrderList:" + globalOrder);
                     }
                 }

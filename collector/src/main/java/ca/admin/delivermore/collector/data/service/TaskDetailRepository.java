@@ -62,13 +62,16 @@ public interface  TaskDetailRepository extends JpaRepository<TaskEntity, UUID> {
     @Query("select count(t.jobId) from TaskEntity t WHERE DATE(t.creationDate) = :date and t.jobStatus = 2")
     Long findTaskCountByDate(@Param("date") Date date);
 
+    @Query("select count(t.jobId) from TaskEntity t where year(t.creationDate) = ?1 and month(t.creationDate) = ?2 and t.jobStatus = 2")
+    Long findTaskCountByYearMonth(Integer year, Integer month);
+
     @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.createdBy = 43 and t.globalSubtotal = 0 and t.jobStatus = 2")
     List<TaskEntity> getTaskEntityByDateMissingGlobalInfo(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
 
-    @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.createdBy = 43 and t.paidToVendor IS NULL and t.jobStatus = 2 and t.restaurantId IN :restaurantIds order by t.restaurantName, t.creationDate")
-    List<TaskEntity> getTaskEntityByDateMissingPOSInfo(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("restaurantIds") List<Long> restaurantIds);
+    @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.createdBy = 43 and t.paidToVendor IS NULL and t.jobStatus = 2 and t.restaurantId = :restaurantId order by t.creationDate")
+    List<TaskEntity> getTaskEntityByDateMissingPOSInfo(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("restaurantId") Long restaurantId);
 
-    @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.createdBy = 43 and t.jobStatus = 2 and t.restaurantId IN :restaurantIds order by t.restaurantName, t.creationDate")
+    @Query("select t from TaskEntity t WHERE t.creationDate BETWEEN :fromDate AND :toDate and t.createdBy = 43 and t.jobStatus = 2 and t.restaurantId IN :restaurantIds order by t.creationDate, t.restaurantName")
     List<TaskEntity> getTaskEntityByDatePOSInfo(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate, @Param("restaurantIds") List<Long> restaurantIds);
 
 }

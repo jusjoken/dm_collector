@@ -24,6 +24,16 @@ public class Utility {
         return Utility.instance;
     }
 
+    public static enum EventType{
+        SHIFT("Shift"), UNAVAILABLE("Unavailable"), OFF("Time off");
+
+        public final String typeName;
+        private EventType(String s) {
+            this.typeName = s;
+        }
+    }
+
+
     public Double round(Double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 

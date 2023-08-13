@@ -4,10 +4,15 @@ package ca.admin.delivermore.collector.data.global;
 import java.util.List;
 import javax.annotation.Generated;
 
+import ca.admin.delivermore.collector.data.Utility;
 import ca.admin.delivermore.collector.data.entity.OrderDetail;
+import ca.admin.delivermore.collector.data.tookan.TaskDetail;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -197,6 +202,9 @@ public class GlobalOrder {
     private ClientAddressParts clientAddressParts;
     @JsonProperty("items")
     private List<Item> items = null;
+
+    @JsonIgnore
+    private Logger log = LoggerFactory.getLogger(TaskDetail.class);
 
     /**
      * No args constructor for use in serialization
@@ -943,17 +951,43 @@ public class GlobalOrder {
         orderDetail.setTotalTaxes(taxValue);
         orderDetail.setOrderType(type);
         orderDetail.setClientName(clientFirstName + " " + clientLastName);
+        String orderText = "";
         for (Item item:items) {
             if(item.getType().equals("delivery_fee")){
                 //log.info("***getOrderDetail***: order:" + id + " getPrice:" + item.getPrice() + " getItemDiscount:" + item.getItemDiscount() + " getTotalItemPrice:" + item.getTotalItemPrice());
                 orderDetail.setDeliveryFee(item.getTotalItemPrice());
-                //log.info("***getOrderDetail***: order:" + id + " setDeliveryFee after:" + orderDetail.getDeliveryFee());
+                if(item.getTaxValue()!=null){
+                    orderDetail.setTaxOnFees(orderDetail.getTaxOnFees() + Utility.getInstance().round(item.getTaxValue(),2));
+                }
+                log.info("***getOrderDetail***: order:" + id + " setDeliveryFee:" + orderDetail.getDeliveryFee() + " taxOnFees:" + orderDetail.getTaxOnFees());
             }else if(item.getType().equals("service_fee_subtotal")){
                 orderDetail.setServiceFee(item.getPrice());
+                if(item.getTaxValue()!=null){
+                    orderDetail.setTaxOnFees(orderDetail.getTaxOnFees() + Utility.getInstance().round(item.getTaxValue(),2));
+                }
+                log.info("***getOrderDetail***: order:" + id + " setServiceFee:" + orderDetail.getServiceFee() + " taxOnFees:" + orderDetail.getTaxOnFees());
             }else if(item.getType().equals("tip")){
                 orderDetail.setTip(item.getTotalItemPrice());
+            }else if(item.getType().equals("item")){
+                //format the item info into a formatted orderText
+                String crlf = "\r\n";
+                String indent = "  - ";
+                if(!orderText.isEmpty()) orderText+= crlf;
+                orderText+= item.getQuantity() + " x " + item.getName() + crlf;
+                if(!item.getInstructions().isEmpty()){
+                    String info = item.getInstructions().replaceAll("\n", "\n    ");
+                    orderText+= indent + "Info: " + info + crlf;
+                }
+                for (Option option: item.getOptions()) {
+                    String quantity = "";
+                    if(option.getQuantity()>1L){
+                        quantity = option.getQuantity() + " x ";
+                    }
+                    orderText+= indent + quantity + option.getGroupName() + " - " + option.getName() + crlf;
+                }
             }
         }
+        orderDetail.setOrderText(orderText);
         return orderDetail;
     }
 

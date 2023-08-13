@@ -107,6 +107,9 @@ public class Restaurant{
         this.email = email;
     }
 
+    @Column(name = "process_order_text")
+    private Boolean processOrderText;
+
     public Restaurant() {
         super();
     }
@@ -263,6 +266,14 @@ public class Restaurant{
     @Column(name = "delivery_fee_from_external_vendor_name")
     private String deliveryFeeFromExternalVendorName;
 
+    public Boolean getProcessOrderText() {
+        return processOrderText;
+    }
+
+    public void setProcessOrderText(Boolean processOrderText) {
+        this.processOrderText = processOrderText;
+    }
+
     public Double getCommissionRatePhonein() {
         return commissionRatePhonein;
     }
@@ -291,11 +302,23 @@ public class Restaurant{
     public String toString() {
         return "Restaurant{" +
                 "restaurantId=" + restaurantId +
+                ", dateEffective=" + dateEffective +
+                ", dateExpired=" + dateExpired +
                 ", name='" + name + '\'' +
                 ", formId=" + formId +
                 ", commissionRate=" + commissionRate +
                 ", commissionPerDelivery=" + commissionPerDelivery +
                 ", deliveryFeeFromVendor=" + deliveryFeeFromVendor +
+                ", deliveryFeeFromVendorWebOrder=" + deliveryFeeFromVendorWebOrder +
+                ", globalAuthCode='" + globalAuthCode + '\'' +
+                ", startDayOffset=" + startDayOffset +
+                ", activeForPayout=" + activeForPayout +
+                ", posGlobal=" + posGlobal +
+                ", posPhonein=" + posPhonein +
+                ", email='" + email + '\'' +
+                ", processOrderText=" + processOrderText +
+                ", commissionRatePhonein=" + commissionRatePhonein +
+                ", commissionPerPhonein=" + commissionPerPhonein +
                 '}';
     }
 }
