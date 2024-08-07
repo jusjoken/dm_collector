@@ -40,6 +40,9 @@ public class SchedulerReportEvent {
     @NotNull
     private Boolean fullDay = false;
 
+    @NotNull
+    private Long teamId = 1335347L;
+
     public Utility.EventType getType() {
         return type;
     }
@@ -62,6 +65,10 @@ public class SchedulerReportEvent {
 
     public Boolean getFullDay() {
         return fullDay;
+    }
+
+    public Long getTeamId() {
+        return teamId;
     }
 
     public String formatForReport(){

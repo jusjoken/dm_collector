@@ -271,12 +271,20 @@ public class Config {
         return settingEntity.getValue();
     }
 
-    private Boolean getSettingAsBoolean(String section, String name, Boolean defaultValue){
+    public Boolean getSettingAsBoolean(String section, String name, Boolean defaultValue){
         String tempValue = getSetting(section, name);
         if(tempValue==null) return defaultValue;
         Boolean tempBool = Boolean.valueOf(tempValue);
         if(tempBool==null) return defaultValue;
         return tempBool;
+    }
+
+    public Long getSettingAsLong(String section, String name, Long defaultValue){
+        String tempValue = getSetting(section, name);
+        if(tempValue==null) return defaultValue;
+        Long tempLong = Long.valueOf(tempValue);
+        if(tempLong==null) return defaultValue;
+        return tempLong;
     }
 
     public void setSetting(String section, String name, String value){

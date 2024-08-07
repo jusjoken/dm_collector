@@ -31,7 +31,7 @@ public class Restaurant{
     private String globalAuthCode = "";
 
     @Column(name = "start_day_offset", nullable = false)
-    private int startDayOffset;
+    private int startDayOffset = 0;
 
     public int getStartDayOffset() {
         return startDayOffset;
@@ -42,7 +42,7 @@ public class Restaurant{
     }
 
     @Column(name = "weeks_in_period", nullable = false)
-    private int weeksInPeriod;
+    private int weeksInPeriod = 1;
 
     public int getWeeksInPeriod() {
         return weeksInPeriod;
@@ -110,6 +110,15 @@ public class Restaurant{
     @Column(name = "process_order_text")
     private Boolean processOrderText;
 
+    @Column(name = "teamId")
+    private Long teamId;
+
+    @Column(name = "driver_pay_override")
+    private Double driverPayOverride = null;
+
+    @Column(name = "use_invoice_processing")
+    private Boolean useInvoiceProcessing = Boolean.FALSE;
+
     public Restaurant() {
         super();
     }
@@ -119,52 +128,6 @@ public class Restaurant{
         this.name = name;
         this.dateEffective = dateEffective;
     }
-
-    /*
-    public Restaurant(Long restaurantId, String name, Double commissionRate, String authCode) {
-        this.restaurantId = restaurantId;
-        this.name = name;
-        this.commissionRate = commissionRate;
-        this.globalAuthCode = authCode;
-    }
-
-    public Restaurant(Long restaurantId, String name, Double commissionRate, Long formId, String authCode) {
-        this.restaurantId = restaurantId;
-        this.name = name;
-        this.formId = formId;
-        this.commissionRate = commissionRate;
-        this.deliveryFeeFromVendor = deliveryFeeFromVendor;
-        this.globalAuthCode = authCode;
-    }
-
-    public Restaurant(Long restaurantId, String name, Double commissionRate, Double deliveryFeeFromVendor, String authCode) {
-        this.restaurantId = restaurantId;
-        this.name = name;
-        this.commissionRate = commissionRate;
-        this.deliveryFeeFromVendor = deliveryFeeFromVendor;
-        this.globalAuthCode = authCode;
-    }
-
-    public Restaurant(Long restaurantId, String name, Double commissionRate, Double deliveryFeeFromVendor, Long formId, String authCode) {
-        this.restaurantId = restaurantId;
-        this.name = name;
-        this.formId = formId;
-        this.commissionRate = commissionRate;
-        this.deliveryFeeFromVendor = deliveryFeeFromVendor;
-        this.globalAuthCode = authCode;
-    }
-
-    public Restaurant(Long restaurantId, String name, Double commissionRate, Double commissionPerDelivery, Double deliveryFeeFromVendor, Long formId, String authCode) {
-        this.restaurantId = restaurantId;
-        this.name = name;
-        this.formId = formId;
-        this.commissionRate = commissionRate;
-        this.commissionPerDelivery = commissionPerDelivery;
-        this.deliveryFeeFromVendor = deliveryFeeFromVendor;
-        this.globalAuthCode = authCode;
-    }
-
-     */
 
     public LocalDate getDateEffective() {
         return dateEffective;
@@ -266,6 +229,30 @@ public class Restaurant{
     @Column(name = "delivery_fee_from_external_vendor_name")
     private String deliveryFeeFromExternalVendorName;
 
+    public Boolean getUseInvoiceProcessing() {
+        return useInvoiceProcessing;
+    }
+
+    public void setUseInvoiceProcessing(Boolean useInvoiceProcessing) {
+        this.useInvoiceProcessing = useInvoiceProcessing;
+    }
+
+    public Double getDriverPayOverride() {
+        return driverPayOverride;
+    }
+
+    public void setDriverPayOverride(Double driverPayOverride) {
+        this.driverPayOverride = driverPayOverride;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
     public Boolean getProcessOrderText() {
         return processOrderText;
     }
@@ -302,6 +289,7 @@ public class Restaurant{
     public String toString() {
         return "Restaurant{" +
                 "restaurantId=" + restaurantId +
+                ", teamId=" + teamId +
                 ", dateEffective=" + dateEffective +
                 ", dateExpired=" + dateExpired +
                 ", name='" + name + '\'' +

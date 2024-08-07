@@ -21,11 +21,19 @@ public interface DriversRepository extends JpaRepository<Driver, UUID> {
 
     Driver findDriverByEmailAndLoginAllowed(String email, Boolean loginAllowed);
 
-    @Query("select d from Driver d order by d.isActive DESC, d.name")
+    @Query("select d from Driver d order by d.isActive DESC, d.teamName, d.name")
     List<Driver> findByOrderByIsActiveDescNameAsc();
+
+    @Query("select d from Driver d where d.teamId = :teamId order by d.isActive DESC, d.name")
+    List<Driver> findByTeamIdOrderByIsActiveNameAsc(@Param("teamId") Long teamId);
 
     @Query("select d from Driver d WHERE d.isActive = 1L order by d.name")
     List<Driver> findActiveOrderByNameAsc();
 
+    @Query("select d from Driver d WHERE d.teamId = :teamId and d.isActive = 1L order by d.name")
+    List<Driver> findActiveByTeamOrderByNameAsc(@Param("teamId") Long teamId);
+
+    @Query("select d from Driver d WHERE d.teamId = :teamId order by d.name")
+    List<Driver> findAllByTeamOrderByNameAsc(@Param("teamId") Long teamId);
 
 }

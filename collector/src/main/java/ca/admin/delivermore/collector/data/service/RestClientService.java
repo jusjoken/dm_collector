@@ -395,11 +395,69 @@ public class RestClientService implements Serializable {
         ObjectNode bodyValues = mapper.createObjectNode();
 
         bodyValues.put("api_key", tookan_api);
+        bodyValues.put("include_team_id", 1);
 
         //log.info("getDriversHeaderBody:" + bodyValues.toString());
         return bodyValues.toString();
 
     }
+
+    /**
+     * Returns parsed {@link Task} objects from the REST service.
+     *
+     * Useful when the response data has a known structure.
+     */
+    public List<Team> getAllTeams() {
+
+        List<Team> teamList = new ArrayList<>();
+
+        String urlExtra = "/view_all_team_only";
+        String urlFull = tookan_baseUrl + urlExtra;
+
+        log.info("Fetching all Teams through Tookan REST..");
+
+        // Fetch from Tookan API
+        RequestHeadersSpec<?> spec = WebClient.create().post()
+                .uri(urlFull)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(getTeamsHeaderBody()));
+
+        // do fetch and map result
+        //log.info("driversList: gettingJSON");
+        String teamsString = spec.retrieve().toEntity(String.class).block().getBody();
+        //TODO: check return status
+        //log.info("driversList String:" + driversString);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Teams teams = null;
+        try {
+            teams = objectMapper.readValue(teamsString,Teams.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        if(teams==null){
+            log.info("teamsList: No teams found");
+        }else{
+            teamList.addAll(teams.getTeam());
+        }
+
+        log.info(String.format("...processed %d teams.", teamList.size()));
+
+        return teamList;
+    }
+
+    private String getTeamsHeaderBody(){
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode bodyValues = mapper.createObjectNode();
+
+        bodyValues.put("api_key", tookan_api);
+
+        return bodyValues.toString();
+
+    }
+
+
 
     /**
      * Returns parsed {@link TaskDetail} objects from the REST service.
