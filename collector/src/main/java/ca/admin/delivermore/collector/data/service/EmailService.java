@@ -60,16 +60,25 @@ public class EmailService
 
     public void sendMailWithHtmlBody(String to, String subject, String body){
         String from = Config.getInstance().getFromEmail();
-        sendMailWithHtmlBody(from,to,subject,body);
+        sendMailWithHtmlBody(from,to,subject,body, null);
     }
 
-    public void sendMailWithHtmlBody(String from, String to, String subject, String body){
+
+    public void sendMailWithHtmlBody(String to, String subject, String body, String Bcc){
+        String from = Config.getInstance().getFromEmail();
+        sendMailWithHtmlBody(from,to,subject,body, Bcc);
+    }
+
+    public void sendMailWithHtmlBody(String from, String to, String subject, String body, String Bcc){
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
         //mimeMessage.setContent(htmlMsg, "text/html"); /** Use this or below line **/
         try {
             helper.setFrom(new InternetAddress(from));
             helper.setText(body, true); // Use this or above line.
+            if(Bcc!=null){
+                helper.setBcc(InternetAddress.parse(Bcc));
+            }
             helper.setTo(InternetAddress.parse(to));
             helper.setSubject(subject);
         } catch (MessagingException e) {

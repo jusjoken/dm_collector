@@ -48,6 +48,7 @@ public class BatchConfigTasks {
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-08-14"),LocalDate.now()));
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-09-24"),LocalDate.now()));
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(maxDateTime.toLocalDate(),LocalDate.now(),maxJobId));
+            //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2024-02-20"),LocalDate.now()));
             return new ListItemReader<TaskDetail>(restClientService.getAllTasks(maxDateTime.toLocalDate(),LocalDate.now()));
         }else{
             return null;

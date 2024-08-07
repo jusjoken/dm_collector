@@ -7,14 +7,12 @@ import javax.annotation.Generated;
 import ca.admin.delivermore.collector.data.Utility;
 import ca.admin.delivermore.collector.data.entity.OrderDetail;
 import ca.admin.delivermore.collector.data.tookan.TaskDetail;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({
     "instructions",
     "coupons",

@@ -6,7 +6,9 @@ import ca.admin.delivermore.collector.data.entity.SchedulerReportEvent;
 import ca.admin.delivermore.collector.data.service.DriversRepository;
 import ca.admin.delivermore.collector.data.service.EmailService;
 import ca.admin.delivermore.collector.data.service.SchedulerReportEventRepository;
+import ca.admin.delivermore.collector.data.service.TeamsRepository;
 import ca.admin.delivermore.collector.data.tookan.Driver;
+import ca.admin.delivermore.collector.data.tookan.Team;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Job;
@@ -35,6 +37,7 @@ public class BatchConfigScheduleReport {
     private StepBuilderFactory stepBuilderFactory;
     private SchedulerReportEventRepository schedulerReportEventRepository;
     private DriversRepository driversRepository;
+    private TeamsRepository teamsRepository;
     private EmailService emailService;
 
     private List<SchedulerReportEvent> schedulerReportEvents;
@@ -63,7 +66,20 @@ public class BatchConfigScheduleReport {
             String emailBody = "<p>Schedule for " + currentDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + "<br><br>";
             log.info("schedulerItemWriter: email subject:" + subject );
             Utility.EventType prevType = null;
+            //event list is ordered by locationId, eventType then start/end
+            Long currentLocationId = null;
+            String currentLocationName = null;
             for (SchedulerReportEvent event: schedulerReportEvents) {
+                Long locationId = event.getTeamId();
+                if(!locationId.equals(currentLocationId)){
+                    currentLocationId = locationId;
+                    //TODO: lookup the team name from this id
+                    Team currentTeam = teamsRepository.findByTeamId(currentLocationId);
+                    if(currentTeam!=null){
+                        currentLocationName = currentTeam.getTeamName();
+                        emailBody += "<br><br>" + currentLocationName + " schedule<br>";
+                    }
+                }
                 String driverId = event.getResourceId();
                 String driverName = "Unassigned";
                 if(driverId.equals("0")){

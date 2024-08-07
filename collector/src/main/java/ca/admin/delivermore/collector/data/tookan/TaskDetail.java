@@ -267,18 +267,21 @@ public class TaskDetail {
     private Double globalTotalPrice = null;
     private Double deliveryFee = 0.0;
     private Double taxOnFees = 0.0;
-    private Double receiptTotal = null;
-    private String paymentMethod = null;
+    private Double receiptTotal = 0.0;
+    private String paymentMethod = "ONLINE";
     private Double paidToVendor = null;
     private Double serviceFeePercent = null;
     private Double serviceFeeAmount = 0.0;
-    private Double totalWithFees = null;
+    private Double totalWithFees = 0.0;
     private TaskEntity taskEntity = new TaskEntity();
     //private DriverPayoutEntity driverPayoutEntity = new DriverPayoutEntity();
     private DriverPayoutEntity driverPayoutEntity;
     private Boolean taskEntityLoaded = Boolean.FALSE;
     private String templateId = null;
     private Boolean skipGlobal = Boolean.FALSE;
+
+    private String refNumber = null;
+
 
     private Long longOrderId = null;
     private Logger log = LoggerFactory.getLogger(TaskDetail.class);
@@ -542,6 +545,9 @@ public class TaskDetail {
                             paymentMethod = customItem.getFleetData().toString().trim().toUpperCase();
                         }
                     }
+                    else if(customItem.getLabel().equals("Invoice")){
+                        refNumber = customItem.getData().getDataAsString();
+                    }
                 }else if(taskType.equals(TaskType.GLOBAL)){ //GlobalFood create tasks
                     if(customItem.getLabel().equals("Payment")){
                         paymentMethod = customItem.getData().getdataString().trim().toUpperCase();
@@ -580,8 +586,9 @@ public class TaskDetail {
                 }
             }
             taskEntity.setLongOrderId(longOrderId);
-            //TODO: need to get the driverPay from a managed database config table
+
             taskEntity.setDriverPay(config.getDriverPayForDelivery());
+            //can be overridden based on restaurant during taskentity build
 
             taskEntity.setSource("tookan");
             taskEntity.setSourceId(jobId);
@@ -593,6 +600,7 @@ public class TaskDetail {
             taskEntity.setRestaurantName(getRestaurantName());
             taskEntity.setNotes(notes);
             taskEntity.setTip(tipInNotes);
+            taskEntity.setRefNumber(refNumber);
             //for global tasks overwrite with the global tip as it is more accurate
             if(taskType.equals(TaskType.GLOBAL) && tipGlobal!=null) taskEntity.setTip(Utility.getInstance().round(tipGlobal,2));
             //for global tasks overwrite with the tookan global total price as it could have been overridden
@@ -816,6 +824,14 @@ public class TaskDetail {
             //log.info("getTaskEntity: findByFleetId returned:" + driver);
             taskEntity.setFleetName(driver.getName());
         }
+
+        //get driver pay override from restaurant if available
+        //log.info("CHECK DRIVER PAY OVERRIDE:" + restaurant.getDriverPayOverride());
+        if(restaurant.getDriverPayOverride()!=null){
+            taskEntity.setDriverPay(restaurant.getDriverPayOverride());
+        }
+
+
         //Calculate delivery fee payback from vendors
         if(deliveryFee.equals(0.0)){
             if(restaurant.getDeliveryFeeFromVendor() > 0.0){

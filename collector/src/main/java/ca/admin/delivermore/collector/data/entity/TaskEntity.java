@@ -168,8 +168,19 @@ public class TaskEntity{
     @CsvBindByName(column = "driverPayout")
     private Double driverPayout = 0.0;
 
+    @Column(name = "ref_number")
+    private String refNumber;
+
     @Column(name = "pos_payment", nullable = false)
     private Boolean posPayment;
+
+    public String getRefNumber() {
+        return refNumber;
+    }
+
+    public void setRefNumber(String refNumber) {
+        this.refNumber = refNumber;
+    }
 
     public Boolean getPosPayment() {
         return posPayment;

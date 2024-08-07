@@ -6,10 +6,13 @@ import javax.persistence.*;
 
 import ca.admin.delivermore.collector.data.Role;
 import ca.admin.delivermore.collector.data.entity.TaskEntity;
+import ca.admin.delivermore.collector.data.service.CollectorRegistry;
+import ca.admin.delivermore.collector.data.service.TeamsRepository;
 import com.fasterxml.jackson.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -41,7 +44,8 @@ import java.util.Set;
     "timezone",
     "fleet_type",
     "block_reason",
-    "is_available"
+    "is_available",
+    "team_id"
 })
 @Generated("jsonschema2pojo")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -108,6 +112,11 @@ public class Driver {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
      */
+    @JsonProperty("team_id")
+    private Long teamId;
+
+    @JsonIgnore
+    private String teamName;
 
     @JsonIgnore
     private String hashedPassword;
@@ -157,8 +166,9 @@ public class Driver {
      * @param fleetThumbImage
      * @param username
      * @param status
+     * @param teamId
      */
-    public Driver(Long fleetId, Long deviceType, Long totalRating, Long totalRatedTasks, Long isActive, Long hasGpsAccuracy, String username, String name, String loginId, Long transportType, String transportDesc, String license, String email, String phone, Long batteryLevel, Long registrationStatus, String latitude, String longitude, String tags, String fleetThumbImage, String fleetImage, Long status, String timezone, Long fleetType, Long isAvailable) {
+    public Driver(Long fleetId, Long deviceType, Long totalRating, Long totalRatedTasks, Long isActive, Long hasGpsAccuracy, String username, String name, String loginId, Long transportType, String transportDesc, String license, String email, String phone, Long batteryLevel, Long registrationStatus, String latitude, String longitude, String tags, String fleetThumbImage, String fleetImage, Long status, String timezone, Long fleetType, Long isAvailable, Long teamId) {
         super();
         this.fleetId = fleetId;
         this.deviceType = deviceType;
@@ -185,6 +195,7 @@ public class Driver {
         this.timezone = timezone;
         this.fleetType = fleetType;
         this.isAvailable = isAvailable;
+        this.teamId = teamId;
     }
 
     @JsonProperty("fleet_id")
@@ -462,6 +473,24 @@ public class Driver {
     }
      */
 
+    @JsonProperty("team_id")
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    @JsonProperty("team_id")
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
     public String getHashedPassword() {
         if(hashedPassword==null){
             return "";
@@ -536,6 +565,7 @@ public class Driver {
                 ", hashedPassword='" + hashedPassword + '\'' +
                 ", loginAllowed=" + loginAllowed +
                 ", roles=" + roles +
+                ", teamId=" + teamId +
                 ", user=" + isUser() +
                 ", manager=" + isManager() +
                 ", admin=" + isAdmin() +
@@ -593,6 +623,8 @@ public class Driver {
         this.timezone = updated.timezone;
         this.fleetType = updated.fleetType;
         this.isAvailable = updated.isAvailable;
+        this.teamId = updated.teamId;
+        this.teamName = updated.teamName;
     }
 
     @Override
