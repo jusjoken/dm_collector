@@ -3,8 +3,8 @@ package ca.admin.delivermore.collector.data.entity;
 import ca.admin.delivermore.collector.data.Utility;
 import com.opencsv.bean.CsvBindByName;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class OrderDetail {

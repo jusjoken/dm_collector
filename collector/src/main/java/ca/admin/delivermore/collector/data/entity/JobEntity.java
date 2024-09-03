@@ -1,6 +1,6 @@
 package ca.admin.delivermore.collector.data.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity

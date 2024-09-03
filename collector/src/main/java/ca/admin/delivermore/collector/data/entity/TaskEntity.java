@@ -5,9 +5,9 @@ import ca.admin.delivermore.collector.data.Utility;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -98,7 +98,8 @@ public class TaskEntity{
     private String customerPhone = "";
     @CsvBindByName(column = "jobAddress")
     private String jobAddress = "";
-    @Lob
+
+    @Column(columnDefinition="LONGTEXT")
     @CsvBindByName(column = "jobDescription")
     private String jobDescription = "";
     @CsvBindByName(column = "paymentMethod")

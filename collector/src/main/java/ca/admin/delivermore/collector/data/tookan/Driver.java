@@ -1,18 +1,14 @@
 
 package ca.admin.delivermore.collector.data.tookan;
 
-import javax.annotation.Generated;
-import javax.persistence.*;
+import jakarta.annotation.Generated;
+import jakarta.persistence.*;
 
 import ca.admin.delivermore.collector.data.Role;
-import ca.admin.delivermore.collector.data.entity.TaskEntity;
-import ca.admin.delivermore.collector.data.service.CollectorRegistry;
-import ca.admin.delivermore.collector.data.service.TeamsRepository;
 import com.fasterxml.jackson.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;

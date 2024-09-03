@@ -1,6 +1,6 @@
 package ca.admin.delivermore.collector.data.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +17,7 @@ public class SettingEntity {
 
     private String description = null;
 
+    @Column(columnDefinition="varchar(1000)")
     private String value;
 
     public enum ValueType{

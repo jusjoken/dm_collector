@@ -1,6 +1,6 @@
 package ca.admin.delivermore.collector.data.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,7 +15,7 @@ public class GlobalOrderJson {
 
     private LocalDateTime lastUpdated = LocalDateTime.now();
 
-    @Lob
+    @Column(columnDefinition="LONGTEXT")
     private String Json;
 
     public enum Status{

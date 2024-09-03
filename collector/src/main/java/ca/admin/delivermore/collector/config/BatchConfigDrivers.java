@@ -10,21 +10,26 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 @AllArgsConstructor
 public class BatchConfigDrivers {
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
+    private JobRepository jobRepository;
+    private PlatformTransactionManager transactionManager;
     private RestClientService restClientService;
     private DriversRepository driversRepository;
 
@@ -56,7 +61,7 @@ public class BatchConfigDrivers {
     @Bean
     public Step driverStep(){
         if(Config.getInstance().getRunDriverJob()){
-            return stepBuilderFactory.get("driverStep").<Driver, Driver>chunk(10)
+            return new StepBuilder("driverStep", jobRepository).<Driver, Driver>chunk(10, transactionManager)
                     .reader(driverItemReader())
                     .writer(driverItemWriter())
                     .build();
@@ -92,7 +97,7 @@ public class BatchConfigDrivers {
     @Bean
     public Step cleanupDriverStep(){
         if(Config.getInstance().getRunDriverJob()){
-            return stepBuilderFactory.get("cleanupDriverStep").<Driver, Driver>chunk(10)
+            return new StepBuilder("cleanupDriverStep",jobRepository).<Driver, Driver>chunk(10, transactionManager)
                     .reader(cleanupDriverItemReader())
                     .processor(driverProcessor())
                     .writer(cleanupDriverItemWriter())
@@ -106,7 +111,7 @@ public class BatchConfigDrivers {
     @Bean
     public Job driverJob(){
         if(Config.getInstance().getRunDriverJob()){
-            return jobBuilderFactory.get("driverJob")
+            return new JobBuilder("driverJob", jobRepository)
                     .incrementer(new RunIdIncrementer())
                     .flow(driverStep())
                     .next(cleanupDriverStep())

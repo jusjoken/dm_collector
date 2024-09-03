@@ -2,32 +2,31 @@ package ca.admin.delivermore.collector.config;
 
 import ca.admin.delivermore.collector.data.Config;
 import ca.admin.delivermore.collector.data.entity.OrderDetail;
-import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import ca.admin.delivermore.collector.data.service.OrderDetailLoader;
 import ca.admin.delivermore.collector.data.service.OrderDetailRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 @AllArgsConstructor
 @Log4j2
 public class BatchConfigOrders {
 
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
+    private JobRepository jobRepository;
+    private PlatformTransactionManager transactionManager;
     private OrderDetailRepository orderDetailRepository;
 
     @Bean
@@ -56,7 +55,7 @@ public class BatchConfigOrders {
     @Bean
     public Step orderDetailStep(){
         if(Config.getInstance().getRunOrderJob()){
-            return stepBuilderFactory.get("orderDetailStep").<OrderDetail, OrderDetail>chunk(10)
+            return new StepBuilder("orderDetailStep", jobRepository).<OrderDetail, OrderDetail>chunk(10, transactionManager)
                     .reader(orderDetailItemReader())
                     .writer(orderDetailItemWriter())
                     .build();
@@ -69,7 +68,7 @@ public class BatchConfigOrders {
     public Job orderDetailsJob(){
         if(Config.getInstance().getRunOrderJob()){
             log.info("BatchConfigRestaurant: orderDetailsJob");
-            return jobBuilderFactory.get("orderDetailJob")
+            return new JobBuilder("orderDetailJob", jobRepository)
                     .incrementer(new RunIdIncrementer())
                     .flow(orderDetailStep())
                     .end().build();

@@ -2,36 +2,33 @@ package ca.admin.delivermore.collector.config;
 
 import ca.admin.delivermore.collector.data.Config;
 import ca.admin.delivermore.collector.data.entity.Restaurant;
-import ca.admin.delivermore.collector.data.entity.TaskEntity;
-import ca.admin.delivermore.collector.data.service.RestClientService;
 import ca.admin.delivermore.collector.data.service.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 @AllArgsConstructor
 @Log4j2
 public class BatchConfigRestaurant {
 
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
+    private JobRepository jobRepository;
+    private PlatformTransactionManager transactionManager;
     private RestaurantRepository restaurantRepository;
     /*
     This is no longer in use for Restaurants.... used for other testing in Collector
@@ -70,7 +67,7 @@ public class BatchConfigRestaurant {
     @Bean
     public Step restaurantsStep(){
         if(Config.getInstance().getRunRestaurantJob()){
-            return stepBuilderFactory.get("restaurantsStep").<Restaurant,Restaurant>chunk(10)
+            return new StepBuilder("restaurantsStep", jobRepository).<Restaurant,Restaurant>chunk(10, transactionManager)
                     .reader(restaurantItemReader())
                     .processor(restaurantProcessor())
                     .writer(restaurantItemWriter())
@@ -84,7 +81,7 @@ public class BatchConfigRestaurant {
     public Job restaurantJob(){
         if(Config.getInstance().getRunRestaurantJob()){
             log.info("BatchConfigRestaurant: restaurantJob");
-            return jobBuilderFactory.get("restaurantJob")
+            return new JobBuilder("restaurantJob", jobRepository)
                     .incrementer(new RunIdIncrementer())
                     .flow(restaurantsStep())
                     .end().build();

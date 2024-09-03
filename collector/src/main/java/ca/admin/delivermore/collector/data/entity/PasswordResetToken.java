@@ -2,7 +2,7 @@ package ca.admin.delivermore.collector.data.entity;
 
 import ca.admin.delivermore.collector.data.tookan.Driver;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Calendar;
 import java.util.Date;
 

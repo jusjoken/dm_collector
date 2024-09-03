@@ -20,11 +20,15 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,12 +36,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 @AllArgsConstructor
 @Log4j2
 public class BatchConfigGlobalOrders {
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
+    private JobRepository jobRepository;
+    private PlatformTransactionManager transactionManager;
     private RestClientService restClientService;
     private RestaurantRepository restaurantRepository;
     private OrderDetailRepository orderDetailRepository;
@@ -92,7 +96,7 @@ public class BatchConfigGlobalOrders {
     @Bean
     public Step globalOrderJsonStep(){
         if(Config.getInstance().getRunGlobalOrderJob()){
-            return stepBuilderFactory.get("globalOrderJsonStep").<GlobalOrderJson, GlobalOrderJson>chunk(10)
+            return new StepBuilder("globalOrderJsonStep", jobRepository).<GlobalOrderJson, GlobalOrderJson>chunk(10, transactionManager)
                     .reader(globalOrderJsonItemReader())
                     .writer(globalOrderJsonItemWriter())
                     .build();
@@ -234,7 +238,7 @@ public class BatchConfigGlobalOrders {
     @Bean
     public Step globalOrderJsonToDetailStep(){
         if(Config.getInstance().getRunGlobalOrderJob()){
-            return stepBuilderFactory.get("globalOrderJsonToDetailStep").<OrderDetail,OrderDetail>chunk(10)
+            return new StepBuilder("globalOrderJsonToDetailStep", jobRepository).<OrderDetail,OrderDetail>chunk(10, transactionManager)
                     .reader(globalOrderItemReader())
                     .writer(globalOrderDetailItemWriter())
                     .build();
@@ -246,7 +250,7 @@ public class BatchConfigGlobalOrders {
     @Bean
     public Job globalOrderJob(){
         if(Config.getInstance().getRunGlobalOrderJob()){
-            return jobBuilderFactory.get("globalOrderJob")
+            return new JobBuilder("globalOrderJob", jobRepository)
                     .incrementer(new RunIdIncrementer())
                     .flow(globalOrderJsonStep())
                     .next(globalOrderJsonToDetailStep())

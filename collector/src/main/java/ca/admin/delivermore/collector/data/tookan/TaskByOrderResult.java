@@ -2,7 +2,7 @@ package ca.admin.delivermore.collector.data.tookan;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

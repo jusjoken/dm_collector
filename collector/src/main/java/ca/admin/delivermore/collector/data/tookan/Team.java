@@ -1,9 +1,9 @@
 
 package ca.admin.delivermore.collector.data.tookan;
 
-import javax.annotation.Generated;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.annotation.Generated;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import com.fasterxml.jackson.annotation.*;
 

@@ -10,25 +10,27 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 @AllArgsConstructor
 @Log4j2
 public class BatchConfigTasks {
 
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
+    private JobRepository jobRepository;
+    private PlatformTransactionManager transactionManager;
     private RestClientService restClientService;
 
     private TaskDetailRepository taskDetailRepository;
@@ -73,7 +75,7 @@ public class BatchConfigTasks {
     @Bean
     public Step taskStep(){
         if(Config.getInstance().getRunTaskJob()){
-            return stepBuilderFactory.get("taskStep").<TaskDetail, TaskEntity>chunk(100)
+            return new StepBuilder("taskStep", jobRepository).<TaskDetail, TaskEntity>chunk(100, transactionManager)
                     .reader(taskItemReader())
                     .processor(taskProcessor())
                     .writer(taskItemWriter())
@@ -86,7 +88,7 @@ public class BatchConfigTasks {
     @Bean
     public Job taskJob(){
         if(Config.getInstance().getRunTaskJob()){
-            return jobBuilderFactory.get("taskJob")
+            return new JobBuilder("taskJob", jobRepository)
                     .incrementer(new RunIdIncrementer())
                     .flow(taskStep())
                     .end().build();

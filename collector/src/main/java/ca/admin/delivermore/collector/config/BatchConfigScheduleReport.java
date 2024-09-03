@@ -14,13 +14,15 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,13 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 @AllArgsConstructor
 @Log4j2
 public class BatchConfigScheduleReport {
 
-    private JobBuilderFactory jobBuilderFactory;
-    private StepBuilderFactory stepBuilderFactory;
+    private JobRepository jobRepository;
+    private PlatformTransactionManager transactionManager;
     private SchedulerReportEventRepository schedulerReportEventRepository;
     private DriversRepository driversRepository;
     private TeamsRepository teamsRepository;
@@ -106,7 +108,7 @@ public class BatchConfigScheduleReport {
     @Bean
     public Step schedulerStep(){
         if(Config.getInstance().getRunScheduleReportJob()){
-            return stepBuilderFactory.get("schedulerStep").<SchedulerReportEvent, SchedulerReportEvent>chunk(10)
+            return new StepBuilder("schedulerStep", jobRepository).<SchedulerReportEvent, SchedulerReportEvent>chunk(10, transactionManager)
                     .reader(schedulerItemReader())
                     .writer(schedulerItemWriter())
                     .build();
@@ -118,7 +120,7 @@ public class BatchConfigScheduleReport {
     @Bean
     public Job schedulerJob(){
         if(Config.getInstance().getRunScheduleReportJob()){
-            return jobBuilderFactory.get("schedulerJob")
+            return new JobBuilder("schedulerJob", jobRepository)
                     .incrementer(new RunIdIncrementer())
                     .flow(schedulerStep())
                     .end().build();

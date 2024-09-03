@@ -2,7 +2,7 @@
 package ca.admin.delivermore.collector.data.global;
 
 import java.util.List;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 import ca.admin.delivermore.collector.data.Utility;
 import ca.admin.delivermore.collector.data.entity.OrderDetail;

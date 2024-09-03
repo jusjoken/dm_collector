@@ -1,7 +1,7 @@
 package ca.admin.delivermore.collector.data.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Entity
