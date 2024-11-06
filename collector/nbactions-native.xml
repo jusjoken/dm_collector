@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Build-Run</actionName>
+            <displayName>Build-Run</displayName>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <properties>
+                <Env.DM_DB_PASSWORD>DeliverMore2022</Env.DM_DB_PASSWORD>
+                <Env.DM_DB_URL>jdbc:mariadb://192.168.0.30:3306/DELIVERMORE</Env.DM_DB_URL>
+                <Env.DM_DB_USER>delivermore</Env.DM_DB_USER>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-spring-boot run with DB settings</actionName>
+            <displayName>spring-boot run with DB settings</displayName>
+            <goals>
+                <goal>org.springframework.boot:spring-boot-maven-plugin:3.3.2:run</goal>
+            </goals>
+            <properties>
+                <Env.DM_DB_PASSWORD>DeliverMore2022</Env.DM_DB_PASSWORD>
+                <Env.DM_DB_URL>jdbc:mariadb://192.168.0.30:3306/DELIVERMORE</Env.DM_DB_URL>
+                <Env.DM_DB_USER>delivermore</Env.DM_DB_USER>
+            </properties>
+        </action>
+        <action>
+            <actionName>run</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.vmArgs></exec.vmArgs>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.appArgs>--spring.batch.job.names=taskJob</exec.appArgs>
+                <exec.mainClass>ca.admin.delivermore.collector.CollectorApplication</exec.mainClass>
+                <exec.executable>java</exec.executable>
+            </properties>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.vmArgs>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.appArgs>--spring.batch.job.names=taskJob</exec.appArgs>
+                <exec.mainClass>ca.admin.delivermore.collector.CollectorApplication</exec.mainClass>
+                <exec.executable>java</exec.executable>
+                <jpda.listen>true</jpda.listen>
+            </properties>
+        </action>
+        <action>
+            <actionName>profile</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.vmArgs></exec.vmArgs>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.mainClass>ca.admin.delivermore.collector.CollectorApplication</exec.mainClass>
+                <exec.executable>java</exec.executable>
+                <exec.appArgs>--spring.batch.job.names=taskJob</exec.appArgs>
+            </properties>
+        </action>
+    </actions>
