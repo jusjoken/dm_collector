@@ -216,7 +216,7 @@ public class Restaurant{
     }
 
     @Column(name = "delivery_fee_from_external")
-    private Double deliveryFeeFromExternal;
+    private Double deliveryFeeFromExternal = 0.0;
 
     public Double getDeliveryFeeFromExternal() {
         return deliveryFeeFromExternal;

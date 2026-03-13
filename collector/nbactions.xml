@@ -81,6 +81,8 @@
             <displayName>Install</displayName>
             <goals>
                 <goal>org.springframework.boot:spring-boot-maven-plugin:3.3.2:install</goal>
+                <goal>-f</goal>
+                <goal>pom.xml</goal>
             </goals>
             <properties>
                 <Env.DM_DB_PASSWORD>DeliverMore2022</Env.DM_DB_PASSWORD>
@@ -90,5 +92,57 @@
             <activatedProfiles>
                 <activatedProfile>native</activatedProfile>
             </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-DM collector - clean/package</actionName>
+            <displayName>DM collector - clean/package</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>package</goal>
+            </goals>
+            <properties>
+                <Env.DM_DB_PASSWORD>DeliverMore2022</Env.DM_DB_PASSWORD>
+                <Env.DM_DB_URL>jdbc:mariadb://192.168.0.30:3306/DELIVERMORE</Env.DM_DB_URL>
+                <Env.DM_DB_USER>delivermore</Env.DM_DB_USER>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-DM collector - install</actionName>
+            <displayName>DM collector - install</displayName>
+            <goals>
+                <goal>install</goal>
+                <goal>-f</goal>
+                <goal>pom.xml</goal>
+            </goals>
+            <properties>
+                <Env.DM_DB_PASSWORD>DeliverMore2022</Env.DM_DB_PASSWORD>
+                <Env.DM_DB_URL>jdbc:mariadb://192.168.0.30:3306/DELIVERMORE</Env.DM_DB_URL>
+                <Env.DM_DB_USER>delivermore</Env.DM_DB_USER>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-SB Collector run Tasks</actionName>
+            <displayName>SB Collector run Tasks</displayName>
+            <goals>
+                <goal>org.springframework.boot:spring-boot-maven-plugin:3.3.2:run</goal>
+                <goal>--spring.batch.job.names=taskJob</goal>
+            </goals>
+            <properties>
+                <Env.DM_DB_PASSWORD>DeliverMore2022</Env.DM_DB_PASSWORD>
+                <Env.DM_DB_URL>jdbc:mariadb://192.168.0.30:3306/DELIVERMORE</Env.DM_DB_URL>
+                <Env.DM_DB_USER>delivermore</Env.DM_DB_USER>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-Collector run taskJob</actionName>
+            <displayName>Collector run taskJob</displayName>
+            <goals>
+                <goal>org.springframework.boot:spring-boot-maven-plugin:3.3.2:run</goal>
+            </goals>
+            <properties>
+                <Env.DM_DB_PASSWORD>DeliverMore2022</Env.DM_DB_PASSWORD>
+                <Env.DM_DB_URL>jdbc:mariadb://192.168.0.30:3306/DELIVERMORE</Env.DM_DB_URL>
+                <Env.DM_DB_USER>delivermore</Env.DM_DB_USER>
+            </properties>
         </action>
     </actions>
