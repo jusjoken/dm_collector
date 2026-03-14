@@ -45,6 +45,12 @@ public class RestClientService implements Serializable {
     }
     public List<TaskDetail> getAllTasks(LocalDate fromDate, LocalDate toDate, Long maxJobId) {
 
+        //as the api can only handle max 31 days the from date should be max 31 days from the todate
+        if (fromDate.isBefore(toDate.minusDays(31))) {  
+            fromDate = toDate.minusDays(31);
+            log.info("getAllTasks: fromDate is more than 31 days from toDate, changing fromDate to:" + fromDate);
+        }
+
         List<TaskDetail> taskDetails = new ArrayList<>();
 
         String urlExtra = "/get_all_tasks";
@@ -158,7 +164,7 @@ public class RestClientService implements Serializable {
         //log.info("taskDetailList: gettingJSON");
         String taskDetailString = spec.retrieve().toEntity(String.class).block().getBody();
         //TODO: check return status
-        log.info("taskDetailList String:" + taskDetailString);
+        // log.info("taskDetailList String:" + taskDetailString);
         ObjectMapper objectMapper = new ObjectMapper();
         TaskDetailList taskDetailList = null;
         try {

@@ -59,7 +59,7 @@ public class Config {
     public static Config instance = null;
 
     public Config() {
-        log.info("Config constructor called");
+        // log.info("Config constructor called");
     }
 
     public static Config getInstance() {

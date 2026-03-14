@@ -24,6 +24,18 @@
             "env": {
                 "LAUNCH_WORKSPACE": "${workspaceFolder:dm_collector}/collector"
             }
+        },
+        {
+            "type": "java",
+            "name": "Collector: taskJob",
+            "request": "launch",
+            "mainClass": "ca.admin.delivermore.collector.CollectorApplication",
+            "args": ["taskJob"],
+            "envFile": "${workspaceFolder:dm_collector}/.env",
+            "env": {
+                "LAUNCH_WORKSPACE": "${workspaceFolder:dm_collector}"
+            },
+            "console": "integratedTerminal"
         }
     ]
 }
