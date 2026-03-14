@@ -1,15 +1,15 @@
 package ca.admin.delivermore.collector.data.service;
 
 import ca.admin.delivermore.collector.data.entity.Restaurant;
+import ca.admin.delivermore.collector.data.entity.RestaurantPk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
-public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
+public interface RestaurantRepository extends JpaRepository<Restaurant, RestaurantPk> {
 
     @Query("select t from Restaurant t WHERE t.restaurantId = :restaurantId")
     List<Restaurant> findByRestaurantId(@Param("restaurantId") Long restaurantId);

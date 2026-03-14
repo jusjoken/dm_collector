@@ -6,7 +6,8 @@ import ca.admin.delivermore.collector.data.entity.TaskEntity;
 import ca.admin.delivermore.collector.data.service.*;
 import ca.admin.delivermore.collector.data.tookan.TaskDetail;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -26,8 +27,8 @@ import java.time.LocalDateTime;
 @Configuration
 //@EnableBatchProcessing
 @AllArgsConstructor
-@Log4j2
 public class BatchConfigTasks {
+    private static final Logger log = LoggerFactory.getLogger(BatchConfigTasks.class);
 
     private JobRepository jobRepository;
     private PlatformTransactionManager transactionManager;

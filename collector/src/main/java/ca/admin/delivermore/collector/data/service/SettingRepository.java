@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface SettingRepository extends JpaRepository<SettingEntity, UUID> {
+import ca.admin.delivermore.collector.data.entity.SettingEntityPk;
+
+public interface SettingRepository extends JpaRepository<SettingEntity, SettingEntityPk> {
 
     @Override
     List<SettingEntity> findAll();

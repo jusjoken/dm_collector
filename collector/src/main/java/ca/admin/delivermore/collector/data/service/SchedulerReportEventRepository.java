@@ -6,9 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
-
-public interface SchedulerReportEventRepository  extends JpaRepository<SchedulerReportEvent, UUID> {
+public interface SchedulerReportEventRepository  extends JpaRepository<SchedulerReportEvent, Long> {
     @Query("select s from SchedulerReportEvent s where s.published = ?1 and s.start between ?2 and ?3 order by s.teamId, s.type, s.start, s.end")
     List<SchedulerReportEvent> findByPublishedAndStartBetween(Boolean published, LocalDateTime startStart, LocalDateTime startEnd);
 

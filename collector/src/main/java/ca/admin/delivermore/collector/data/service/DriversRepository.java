@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface DriversRepository extends JpaRepository<Driver, UUID> {
+public interface DriversRepository extends JpaRepository<Driver, Long> {
 
     @Query("select t from Driver t WHERE t.fleetId = :fleetId")
     Driver findByFleetId(@Param("fleetId") Long fleetId);

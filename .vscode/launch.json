@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        
+        {
+            "type": "java",
+            "name": "Collector Debug",
+            "request": "launch",
+            "mainClass": "ca.admin.delivermore.collector.CollectorApplication",
+            "projectName": "dm_collector",
+            "args": "",
+            "envFile": "${workspaceFolder:dm_collector}/.env",
+            "env": {
+                "LAUNCH_WORKSPACE": "${workspaceFolder:dm_collector}"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node-terminal",
+            "name": "Collector Maven: clean install",
+            "request": "launch",
+            "command": "mvn clean install",
+            "cwd": "${workspaceFolder:dm_collector}/collector",
+            "envFile": "${workspaceFolder:dm_collector}/.env",
+            "env": {
+                "LAUNCH_WORKSPACE": "${workspaceFolder:dm_collector}/collector"
+            }
+        }
+    ]
+}

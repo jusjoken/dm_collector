@@ -7,13 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
-public interface  TaskDetailRepository extends JpaRepository<TaskEntity, UUID> {
+public interface  TaskDetailRepository extends JpaRepository<TaskEntity, ca.admin.delivermore.collector.data.entity.TaskEntityPk> {
     @Query("select t from TaskEntity t WHERE t.completedDate BETWEEN :fromDate AND :toDate order by t.completedDate")
     List<TaskEntity> search(@Param("fromDate") LocalDateTime fromDate, @Param("toDate") LocalDateTime toDate);
 

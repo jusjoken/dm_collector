@@ -12,7 +12,6 @@ import ca.admin.delivermore.collector.data.tookan.TaskByOrderDetail;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -38,8 +37,9 @@ import java.util.List;
 @Configuration
 //@EnableBatchProcessing
 @AllArgsConstructor
-@Log4j2
 public class BatchConfigGlobalOrders {
+    private static final Logger log = LoggerFactory.getLogger(BatchConfigGlobalOrders.class);
+
     private JobRepository jobRepository;
     private PlatformTransactionManager transactionManager;
     private RestClientService restClientService;

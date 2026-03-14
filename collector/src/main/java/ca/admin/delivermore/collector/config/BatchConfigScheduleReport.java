@@ -10,7 +10,8 @@ import ca.admin.delivermore.collector.data.service.TeamsRepository;
 import ca.admin.delivermore.collector.data.tookan.Driver;
 import ca.admin.delivermore.collector.data.tookan.Team;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -32,8 +33,8 @@ import java.util.List;
 @Configuration
 //@EnableBatchProcessing
 @AllArgsConstructor
-@Log4j2
 public class BatchConfigScheduleReport {
+    private static final Logger log = LoggerFactory.getLogger(BatchConfigScheduleReport.class);
 
     private JobRepository jobRepository;
     private PlatformTransactionManager transactionManager;
