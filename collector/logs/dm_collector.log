@@ -820,3 +820,22 @@ Caused by: java.lang.RuntimeException: Driver org.mariadb.jdbc.Driver claims to 
 2026-03-13 13:54:46,859 INFO o.s.o.j.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-03-13 13:54:46,860 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
 2026-03-13 13:54:46,864 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2026-03-14 14:11:40,639 INFO o.s.b.StartupInfoLogger [main] Starting CollectorApplicationTests using Java 25.0.2 with PID 926002 (started by birch in /home/birch/projects/dm_collector/collector)
+2026-03-14 14:11:40,641 INFO o.s.b.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2026-03-14 14:11:40,864 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-14 14:11:40,951 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 82 ms. Found 10 JPA repository interfaces.
+2026-03-14 14:11:41,278 INFO o.h.j.i.u.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-14 14:11:41,308 INFO o.h.Version [main] HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-03-14 14:11:41,329 INFO o.h.c.i.RegionFactoryInitiator [main] HHH000026: Second-level cache disabled
+2026-03-14 14:11:41,506 INFO o.s.o.j.p.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-14 14:11:41,519 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Starting...
+2026-03-14 14:11:41,573 INFO c.z.h.p.HikariPool [main] HikariPool-1 - Added connection org.mariadb.jdbc.Connection@138a85d3
+2026-03-14 14:11:41,574 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Start completed.
+2026-03-14 14:11:42,283 INFO o.h.e.t.j.p.i.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-14 14:11:42,389 INFO o.s.o.j.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-14 14:11:42,559 INFO o.s.d.j.r.q.QueryEnhancerFactory [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-14 14:11:43,280 INFO o.s.b.StartupInfoLogger [main] Started CollectorApplicationTests in 2.879 seconds (process running for 3.37)
+2026-03-14 14:11:43,283 INFO o.s.b.a.b.JobLauncherApplicationRunner [main] Running default command line with: []
+2026-03-14 14:11:43,558 INFO o.s.o.j.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-14 14:11:43,559 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2026-03-14 14:11:43,564 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
