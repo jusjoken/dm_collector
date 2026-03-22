@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import ca.admin.delivermore.collector.data.Config;
+import ca.admin.delivermore.collector.version.CollectorVersionInfo;
 
 @SpringBootApplication
 @ComponentScan({"ca.admin.delivermore"})
@@ -20,6 +21,7 @@ public class CollectorApplication {
 	public static void main(String[] args) {
 		//System.exit(SpringApplication.exit(SpringApplication.run(CollectorApplication.class, args)));
 		log.info("Working Directory = " + System.getProperty("user.dir"));
+		log.info("Collector Version = {}", CollectorVersionInfo.getVersion());
 		log.info("CollectorApplication: startup args:");
 		for ( String arg : args ) {
 			log.info("CollectorApplication: startup arg:" + arg);
