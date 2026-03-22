@@ -1,24 +1,21 @@
 package ca.admin.delivermore.collector;
 
-import ca.admin.delivermore.collector.data.Config;
-import ca.admin.delivermore.collector.data.service.RestClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.rmi.registry.Registry;
+import ca.admin.delivermore.collector.data.Config;
 
 @SpringBootApplication
 @ComponentScan({"ca.admin.delivermore"})
 @EnableJpaRepositories("ca.admin.delivermore")
 @EntityScan("ca.admin.delivermore")
 public class CollectorApplication {
-	private static Logger log = LoggerFactory.getLogger(CollectorApplication.class);
+	private static final Logger log = LoggerFactory.getLogger(CollectorApplication.class);
 
 	public static void main(String[] args) {
 		//System.exit(SpringApplication.exit(SpringApplication.run(CollectorApplication.class, args)));

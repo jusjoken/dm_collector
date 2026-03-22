@@ -6,15 +6,14 @@ import ca.admin.delivermore.collector.data.service.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.data.RepositoryItemWriter;
-import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.infrastructure.item.data.RepositoryItemWriter;
+import org.springframework.batch.infrastructure.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -57,8 +56,7 @@ public class BatchConfigRestaurant {
     @Bean
     public RepositoryItemWriter<Restaurant> restaurantItemWriter(){
         if(Config.getInstance().getRunRestaurantJob()){
-            RepositoryItemWriter<Restaurant> writer = new RepositoryItemWriter<>();
-            writer.setRepository(restaurantRepository);
+            RepositoryItemWriter<Restaurant> writer = new RepositoryItemWriter<>(restaurantRepository);
             return writer;
         }else{
             return null;
@@ -68,7 +66,7 @@ public class BatchConfigRestaurant {
     @Bean
     public Step restaurantsStep(){
         if(Config.getInstance().getRunRestaurantJob()){
-            return new StepBuilder("restaurantsStep", jobRepository).<Restaurant,Restaurant>chunk(10, transactionManager)
+            return new StepBuilder("restaurantsStep", jobRepository).<Restaurant,Restaurant>chunk(10).transactionManager(transactionManager)
                     .reader(restaurantItemReader())
                     .processor(restaurantProcessor())
                     .writer(restaurantItemWriter())

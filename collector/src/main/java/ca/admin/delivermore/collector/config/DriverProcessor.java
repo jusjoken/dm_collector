@@ -1,7 +1,7 @@
 package ca.admin.delivermore.collector.config;
 
 import ca.admin.delivermore.collector.data.tookan.Driver;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,17 +14,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.data.RepositoryItemWriter;
-import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.infrastructure.item.data.RepositoryItemWriter;
+import org.springframework.batch.infrastructure.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -85,8 +82,7 @@ public class BatchConfigGlobalOrders {
     @Bean
     public RepositoryItemWriter<GlobalOrderJson> globalOrderJsonItemWriter(){
         if(Config.getInstance().getRunGlobalOrderJob()){
-            RepositoryItemWriter<GlobalOrderJson> writer = new RepositoryItemWriter<>();
-            writer.setRepository(globalOrderJsonRepository);
+            RepositoryItemWriter<GlobalOrderJson> writer = new RepositoryItemWriter<>(globalOrderJsonRepository);
             return writer;
         }else{
             return null;
@@ -96,7 +92,7 @@ public class BatchConfigGlobalOrders {
     @Bean
     public Step globalOrderJsonStep(){
         if(Config.getInstance().getRunGlobalOrderJob()){
-            return new StepBuilder("globalOrderJsonStep", jobRepository).<GlobalOrderJson, GlobalOrderJson>chunk(10, transactionManager)
+            return new StepBuilder("globalOrderJsonStep", jobRepository).<GlobalOrderJson, GlobalOrderJson>chunk(10).transactionManager(transactionManager)
                     .reader(globalOrderJsonItemReader())
                     .writer(globalOrderJsonItemWriter())
                     .build();
@@ -220,8 +216,7 @@ public class BatchConfigGlobalOrders {
     @Bean
     public RepositoryItemWriter<OrderDetail> globalOrderDetailItemWriter(){
         if(Config.getInstance().getRunGlobalOrderJob()){
-            RepositoryItemWriter<OrderDetail> writer = new RepositoryItemWriter<>();
-            writer.setRepository(orderDetailRepository);
+            RepositoryItemWriter<OrderDetail> writer = new RepositoryItemWriter<>(orderDetailRepository);
             //find the original JSON from the reader and set it to Status COMPLETE
             for (GlobalOrderJson globalOrderJson: masterGlobalOrderJsonSource) {
                 globalOrderJson.setStatus(GlobalOrderJson.Status.COMPLETE);
@@ -238,7 +233,7 @@ public class BatchConfigGlobalOrders {
     @Bean
     public Step globalOrderJsonToDetailStep(){
         if(Config.getInstance().getRunGlobalOrderJob()){
-            return new StepBuilder("globalOrderJsonToDetailStep", jobRepository).<OrderDetail,OrderDetail>chunk(10, transactionManager)
+            return new StepBuilder("globalOrderJsonToDetailStep", jobRepository).<OrderDetail,OrderDetail>chunk(10).transactionManager(transactionManager)
                     .reader(globalOrderItemReader())
                     .writer(globalOrderDetailItemWriter())
                     .build();

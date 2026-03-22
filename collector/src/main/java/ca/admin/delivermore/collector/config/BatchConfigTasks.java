@@ -8,15 +8,14 @@ import ca.admin.delivermore.collector.data.tookan.TaskDetail;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.data.RepositoryItemWriter;
-import org.springframework.batch.item.support.ListItemReader;
+import org.springframework.batch.infrastructure.item.data.RepositoryItemWriter;
+import org.springframework.batch.infrastructure.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -65,8 +64,7 @@ public class BatchConfigTasks {
     @Bean
     public RepositoryItemWriter<TaskEntity> taskItemWriter(){
         if(Config.getInstance().getRunTaskJob()){
-            RepositoryItemWriter<TaskEntity> writer = new RepositoryItemWriter<>();
-            writer.setRepository(taskDetailRepository);
+            RepositoryItemWriter<TaskEntity> writer = new RepositoryItemWriter<>(taskDetailRepository);
             return writer;
         }else{
             return null;
@@ -76,7 +74,7 @@ public class BatchConfigTasks {
     @Bean
     public Step taskStep(){
         if(Config.getInstance().getRunTaskJob()){
-            return new StepBuilder("taskStep", jobRepository).<TaskDetail, TaskEntity>chunk(100, transactionManager)
+            return new StepBuilder("taskStep", jobRepository).<TaskDetail, TaskEntity>chunk(100).transactionManager(transactionManager)
                     .reader(taskItemReader())
                     .processor(taskProcessor())
                     .writer(taskItemWriter())
