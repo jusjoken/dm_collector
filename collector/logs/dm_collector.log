@@ -58,3 +58,33 @@
 2026-03-22 07:03:28,935 INFO o.s.o.j.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-03-22 07:03:28,936 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
 2026-03-22 07:03:28,943 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2026-03-22 07:06:46,225 INFO o.s.b.StartupInfoLogger [main] Starting CollectorApplicationTests using Java 25.0.2 with PID 1847390 (started by birch in /home/birch/projects/dm_collector/collector)
+2026-03-22 07:06:46,227 INFO o.s.b.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2026-03-22 07:06:46,479 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-22 07:06:46,561 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 77 ms. Found 10 JPA repository interfaces.
+2026-03-22 07:06:46,857 INFO o.h.j.i.u.LogHelper [main] HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-22 07:06:46,882 INFO o.h.Version [main] HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-03-22 07:06:47,141 INFO o.s.o.j.p.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-22 07:06:47,157 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Starting...
+2026-03-22 07:06:47,208 INFO c.z.h.p.HikariPool [main] HikariPool-1 - Added connection org.mariadb.jdbc.Connection@2e09e367
+2026-03-22 07:06:47,209 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Start completed.
+2026-03-22 07:06:47,240 INFO o.h.e.j.e.i.JdbcEnvironmentInitiator [main] HHH10001005: Database info:
+	Database JDBC URL [jdbc:mariadb://192.168.0.30/DELIVERMORE?user=delivermore&password=***]
+	Database driver: MariaDB Connector/J
+	Database dialect: MariaDBDialect
+	Database version: 11.4.8
+	Default catalog/schema: DELIVERMORE/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-22 07:06:47,953 INFO o.h.e.t.j.p.i.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-22 07:06:48,095 INFO o.s.o.j.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-22 07:06:48,148 INFO o.s.d.j.r.q.QueryEnhancerFactories [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-22 07:06:49,136 INFO o.s.b.StartupInfoLogger [main] Started CollectorApplicationTests in 3.135 seconds (process running for 3.753)
+2026-03-22 07:06:49,138 INFO o.s.b.b.a.JobLauncherApplicationRunner [main] Running default command line with: []
+2026-03-22 07:06:49,430 INFO o.s.o.j.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-22 07:06:49,432 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2026-03-22 07:06:49,439 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
