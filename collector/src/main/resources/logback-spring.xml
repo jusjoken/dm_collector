@@ -18,7 +18,7 @@
         <append>true</append>
         <encoder
             class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss,SSS,${LOG_TZ}} %p %C{1} [%t] %m%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,${LOG_TZ}} %p %C{1} [%t] %m%n</Pattern>
         </encoder>
 
         <rollingPolicy

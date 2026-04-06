@@ -45,7 +45,7 @@ public class BatchConfigTasks {
             //Long maxJobId = taskDetailRepository.getMaxSuccessfulJobId();
             //log.info("taskItemReader: maxJobId:" + maxJobId);
             restClientService = new RestClientService();
-            log.info("taskItemReader: processing all tasks that are not already successful.");
+            log.debug("taskItemReader: processing all tasks that are not already successful.");
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-08-14"),LocalDate.parse("2022-08-15")));
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-08-14"),LocalDate.now()));
             //return new ListItemReader<TaskDetail>(restClientService.getAllTasks(LocalDate.parse("2022-09-24"),LocalDate.now()));

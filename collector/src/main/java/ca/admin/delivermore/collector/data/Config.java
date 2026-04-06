@@ -1,17 +1,18 @@
 package ca.admin.delivermore.collector.data;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.admin.delivermore.collector.data.entity.JobEntity;
 import ca.admin.delivermore.collector.data.entity.SettingEntity;
 import ca.admin.delivermore.collector.data.service.CollectorRegistry;
 import ca.admin.delivermore.collector.data.service.JobStatusRepository;
 import ca.admin.delivermore.collector.data.service.SettingRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class Config {
 
@@ -212,11 +213,11 @@ public class Config {
         JobEntity jobEntity = jobRepository.findByJobId(jobId);
         if(jobEntity!=null){
             if(jobEntity.getEnabled()){
-                log.info("checkJob:" + jobId + " ENABLED and will run");
+                log.debug("checkJob:" + jobId + " ENABLED and will run");
                 jobEntity.setLastRun(LocalDateTime.now());
                 jobRepository.save(jobEntity);
             }else{
-                log.info("checkJob:" + jobId + " NOT enabled in database and will NOT run");
+                log.debug("checkJob:" + jobId + " NOT enabled in database and will NOT run");
             }
             return jobEntity.getEnabled();
         }

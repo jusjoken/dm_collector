@@ -85,7 +85,7 @@ public class RestClientService implements Serializable {
             //log.info("taskList: gettingJSON");
             String taskString = spec.retrieve().toEntity(String.class).block().getBody();
             //TODO: check return status
-            log.info("taskList String:" + taskString);
+            log.debug("taskList String:" + taskString);
             ObjectMapper objectMapper = new ObjectMapper();
             TaskList taskList = null;
             try {
@@ -96,12 +96,14 @@ public class RestClientService implements Serializable {
             if(taskList==null){
                 //log.info("taskList: No tasks found");
             }else{
-                log.info("taskList: processing page " + currentPage + " of " + taskList.getTotalPageCount() + " pages");
+                log.debug("taskList: processing page " + currentPage + " of " + taskList.getTotalPageCount() + " pages");
                 //tasks.addAll(taskList.getData());
                 //List<Long> tempList = new ArrayList<>();
                 //tempList.add(436403278L);
                 //TODO: check if on the first run there are actually tasks - do not call taskdetails if none
-                taskDetails.addAll(getTaskDetails(taskList.getTaskIDs(maxJobId)));
+                List<TaskDetail> pageTaskDetails = getTaskDetails(taskList.getTaskIDs(maxJobId));
+                taskDetails.addAll(pageTaskDetails);
+                log.info("taskList ids page " + currentPage + "/" + taskList.getTotalPageCount() + ": " + formatTaskIdentifiers(pageTaskDetails));
                 //taskDetails.addAll(getTaskDetails(tempList));
 
             }
@@ -137,6 +139,30 @@ public class RestClientService implements Serializable {
         //log.info("getTaskHeaderBody:" + bodyValues.toString());
         return bodyValues.toString();
 
+    }
+
+    private String formatTaskIdentifiers(List<TaskDetail> taskDetails) {
+        if (taskDetails == null || taskDetails.isEmpty()) {
+            return "<none>";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < taskDetails.size(); i++) {
+            TaskDetail taskDetail = taskDetails.get(i);
+            if (i > 0) {
+                sb.append(", ");
+            }
+            String orderId = taskDetail.getOrderId();
+            if (orderId == null || orderId.isBlank()) {
+                orderId = "-";
+            }
+            sb.append("job_id=")
+              .append(taskDetail.getJobId())
+              .append("/order_id=")
+              .append(orderId);
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -188,7 +214,7 @@ public class RestClientService implements Serializable {
             taskDetails.addAll(taskDetailList.getData());
         }
 
-        log.info(String.format("...received %d taskDetails.", taskDetails.size()));
+        log.debug(String.format("...received %d taskDetails.", taskDetails.size()));
 
         return taskDetails;
     }
