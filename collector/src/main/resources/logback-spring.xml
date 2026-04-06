@@ -2,6 +2,7 @@
 <configuration>
 
     <property name="LOGS" value="./logs" />
+    <property name="LOG_TZ" value="${LOG_TZ:-America/Edmonton}" />
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 	
     <appender name="Console"
@@ -14,15 +15,16 @@
     <appender name="RollingFile"
         class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/dm_collector.log</file>
+        <append>true</append>
         <encoder
             class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d %p %C{1} [%t] %m%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss,SSS,${LOG_TZ}} %p %C{1} [%t] %m%n</Pattern>
         </encoder>
 
         <rollingPolicy
             class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 10 MegaBytes -->
-            <fileNamePattern>${LOGS}/archived/dm_collector-%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>${LOGS}/archived/dm_collector-%d{yyyy-MM-dd,${LOG_TZ}}.%i.log
             </fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
         </rollingPolicy>

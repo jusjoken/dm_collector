@@ -1,0 +1,115 @@
+2026-03-22 06:31:43,138 INFO o.s.b.StartupInfoLogger [main] Starting CollectorApplication using Java 21.0.10 with PID 1796973 (/home/birch/projects/dm_collector/collector/target/classes started by birch in /home/birch/projects/dm_collector)
+2026-03-22 06:31:43,141 INFO o.s.b.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2026-03-22 06:31:43,433 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-22 06:31:43,520 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 80 ms. Found 10 JPA repository interfaces.
+2026-03-22 06:31:43,854 INFO o.h.j.i.u.LogHelper [main] HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-22 06:31:43,883 INFO o.h.Version [main] HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-03-22 06:31:44,142 INFO o.s.o.j.p.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-22 06:31:44,158 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Starting...
+2026-03-22 06:31:44,247 INFO c.z.h.p.HikariPool [main] HikariPool-1 - Added connection org.mariadb.jdbc.Connection@534d0e20
+2026-03-22 06:31:44,248 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Start completed.
+2026-03-22 06:31:44,277 INFO o.h.e.j.e.i.JdbcEnvironmentInitiator [main] HHH10001005: Database info:
+	Database JDBC URL [jdbc:mariadb://192.168.0.30/DELIVERMORE?user=delivermore&password=***]
+	Database driver: MariaDB Connector/J
+	Database dialect: MariaDBDialect
+	Database version: 11.4.8
+	Default catalog/schema: DELIVERMORE/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-22 06:31:45,035 INFO o.h.e.t.j.p.i.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-22 06:31:45,208 INFO o.s.o.j.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-22 06:31:45,270 INFO o.s.d.j.r.q.QueryEnhancerFactories [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-22 06:31:46,223 INFO c.a.d.c.d.Config [main] checkJob:taskJob ENABLED and will run
+2026-03-22 06:31:46,339 INFO c.a.d.c.c.BatchConfigTasks [main] taskItemReader: processing all tasks that are not already successful.
+2026-03-22 06:31:47,082 INFO c.a.d.c.d.s.RestClientService [main] taskList: processing page 1 of 1 pages
+2026-03-22 06:31:47,593 INFO c.a.d.c.d.s.RestClientService [main] ...received 51 taskDetails.
+2026-03-22 06:31:47,594 INFO c.a.d.c.d.s.RestClientService [main] ...processed 51 tasks.
+2026-03-22 06:31:47,740 INFO o.s.b.StartupInfoLogger [main] Started CollectorApplication in 4.912 seconds (process running for 5.187)
+2026-03-22 06:31:47,742 INFO o.s.b.b.a.JobLauncherApplicationRunner [main] Running default command line with: [taskJob]
+2026-03-22 06:31:47,747 INFO o.s.b.c.l.s.SimpleJobOperator [main] Launching next instance of job: [taskJob] with parameters: [{JobParameter{name='run.id', value=1, type=class java.lang.Long, identifying=true}}]
+2026-03-22 06:31:47,749 INFO o.s.b.c.l.s.TaskExecutorJobLauncher$1 [main] Job: [FlowJob: [name=taskJob]] launched with the following parameters: [{JobParameter{name='run.id', value=1, type=class java.lang.Long, identifying=true}}]
+2026-03-22 06:31:47,754 INFO o.s.b.c.s.AbstractStep [main] Executing step: [taskStep]
+2026-03-22 06:31:48,798 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602569650
+2026-03-22 06:31:48,859 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602575537
+2026-03-22 06:31:48,883 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602575537 orderDetail was null for orderId:1170824543
+2026-03-22 06:31:48,918 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602580809
+2026-03-22 06:31:48,925 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602580809 orderDetail was null for orderId:1170880504
+2026-03-22 06:31:48,956 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602600754
+2026-03-22 06:31:48,966 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602600754 orderDetail was null for orderId:1171026764
+2026-03-22 06:31:48,997 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602607450
+2026-03-22 06:31:49,004 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602607450 orderDetail was null for orderId:1170993691
+2026-03-22 06:31:49,035 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602607551
+2026-03-22 06:31:49,043 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602607551 orderDetail was null for orderId:1171069431
+2026-03-22 06:31:49,073 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602611969
+2026-03-22 06:31:49,080 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602611969 orderDetail was null for orderId:1171030700
+2026-03-22 06:31:49,110 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602614507
+2026-03-22 06:31:49,119 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602614507 orderDetail was null for orderId:1171079114
+2026-03-22 06:31:49,149 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602616409
+2026-03-22 06:31:49,158 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602616409 orderDetail was null for orderId:1171094490
+2026-03-22 06:31:49,189 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602616797
+2026-03-22 06:31:49,195 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602616797 orderDetail was null for orderId:1171079651
+2026-03-22 06:31:49,224 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602618095
+2026-03-22 06:31:49,271 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602625369
+2026-03-22 06:31:49,278 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602625369 orderDetail was null for orderId:1171123003
+2026-03-22 06:31:49,321 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602639124
+2026-03-22 06:31:49,330 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602639124 orderDetail was null for orderId:1171133825
+2026-03-22 06:31:49,363 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602649092
+2026-03-22 06:31:49,370 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602649092 orderDetail was null for orderId:1171136487
+2026-03-22 06:31:49,403 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602649132
+2026-03-22 06:31:49,441 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602649217
+2026-03-22 06:31:49,481 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602653040
+2026-03-22 06:31:49,486 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602653040 orderDetail was null for orderId:1171147936
+2026-03-22 06:31:49,519 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602655094
+2026-03-22 06:31:49,559 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602658991
+2026-03-22 06:31:49,565 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602658991 orderDetail was null for orderId:1171169637
+2026-03-22 06:31:49,601 INFO c.a.d.c.c.TaskProcessor [main] TaskProcessor: processing: task:602659326
+2026-03-22 06:31:49,609 INFO c.a.d.c.d.e.TaskEntity [main] getTaskEntity: jobId:602659326 orderDetail was null for orderId:1171174903
+2026-03-22 06:31:49,721 INFO o.s.b.c.s.AbstractStep [main] Step: [taskStep] executed in 1s967ms
+2026-03-22 06:31:49,723 INFO o.s.b.c.l.s.TaskExecutorJobLauncher$1 [main] Job: [FlowJob: [name=taskJob]] completed with the following parameters: [{JobParameter{name='run.id', value=1, type=class java.lang.Long, identifying=true}}] and the following status: [COMPLETED] in 1s969ms
+2026-03-22 06:31:51,744 INFO o.s.o.j.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-22 06:31:51,745 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2026-03-22 06:31:51,752 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2026-03-22 07:05:12,315 INFO o.s.b.StartupInfoLogger [main] Starting CollectorApplication using Java 21.0.10 with PID 1845959 (/home/birch/projects/dm_collector/collector/target/classes started by birch in /home/birch/projects/dm_collector)
+2026-03-22 07:05:12,317 INFO o.s.b.SpringApplication [main] No active profile set, falling back to 1 default profile: "default"
+2026-03-22 07:05:12,611 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-22 07:05:12,703 INFO o.s.d.r.c.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 86 ms. Found 10 JPA repository interfaces.
+2026-03-22 07:05:13,045 INFO o.h.j.i.u.LogHelper [main] HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-22 07:05:13,072 INFO o.h.Version [main] HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-03-22 07:05:13,352 INFO o.s.o.j.p.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-22 07:05:13,369 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Starting...
+2026-03-22 07:05:13,432 INFO c.z.h.p.HikariPool [main] HikariPool-1 - Added connection org.mariadb.jdbc.Connection@579f3c8e
+2026-03-22 07:05:13,434 INFO c.z.h.HikariDataSource [main] HikariPool-1 - Start completed.
+2026-03-22 07:05:13,466 INFO o.h.e.j.e.i.JdbcEnvironmentInitiator [main] HHH10001005: Database info:
+	Database JDBC URL [jdbc:mariadb://192.168.0.30/DELIVERMORE?user=delivermore&password=***]
+	Database driver: MariaDB Connector/J
+	Database dialect: MariaDBDialect
+	Database version: 11.4.8
+	Default catalog/schema: DELIVERMORE/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-22 07:05:14,279 INFO o.h.e.t.j.p.i.JtaPlatformInitiator [main] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-22 07:05:14,446 INFO o.s.o.j.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-22 07:05:14,506 INFO o.s.d.j.r.q.QueryEnhancerFactories [main] Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-22 07:05:15,452 INFO c.a.d.c.d.Config [main] checkJob:taskJob ENABLED and will run
+2026-03-22 07:05:15,570 INFO c.a.d.c.c.BatchConfigTasks [main] taskItemReader: processing all tasks that are not already successful.
+2026-03-22 07:05:16,288 INFO c.a.d.c.d.s.RestClientService [main] taskList: processing page 1 of 1 pages
+2026-03-22 07:05:16,496 INFO c.a.d.c.d.s.RestClientService [main] ...received 20 taskDetails.
+2026-03-22 07:05:16,497 INFO c.a.d.c.d.s.RestClientService [main] ...processed 20 tasks.
+2026-03-22 07:05:16,639 INFO o.s.b.StartupInfoLogger [main] Started CollectorApplication in 4.628 seconds (process running for 4.925)
+2026-03-22 07:05:16,642 INFO o.s.b.b.a.JobLauncherApplicationRunner [main] Running default command line with: [taskJob]
+2026-03-22 07:05:16,648 INFO o.s.b.c.l.s.SimpleJobOperator [main] Launching next instance of job: [taskJob] with parameters: [{JobParameter{name='run.id', value=1, type=class java.lang.Long, identifying=true}}]
+2026-03-22 07:05:16,649 INFO o.s.b.c.l.s.TaskExecutorJobLauncher$1 [main] Job: [FlowJob: [name=taskJob]] launched with the following parameters: [{JobParameter{name='run.id', value=1, type=class java.lang.Long, identifying=true}}]
+2026-03-22 07:05:16,655 INFO o.s.b.c.s.AbstractStep [main] Executing step: [taskStep]
+2026-03-22 07:05:17,301 INFO o.s.b.c.s.AbstractStep [main] Step: [taskStep] executed in 645ms
+2026-03-22 07:05:17,303 INFO o.s.b.c.l.s.TaskExecutorJobLauncher$1 [main] Job: [FlowJob: [name=taskJob]] completed with the following parameters: [{JobParameter{name='run.id', value=1, type=class java.lang.Long, identifying=true}}] and the following status: [COMPLETED] in 648ms
+2026-03-22 07:05:19,326 INFO o.s.o.j.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-22 07:05:19,328 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2026-03-22 07:05:19,336 INFO c.z.h.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.

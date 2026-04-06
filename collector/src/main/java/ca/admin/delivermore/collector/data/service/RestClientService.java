@@ -1,18 +1,12 @@
 package ca.admin.delivermore.collector.data.service;
 
-import ca.admin.delivermore.collector.data.entity.Restaurant;
-import ca.admin.delivermore.collector.data.entity.TaskEntity;
-import ca.admin.delivermore.collector.data.global.GlobalOrder;
-import ca.admin.delivermore.collector.data.global.GlobalOrderList;
-import ca.admin.delivermore.collector.data.tookan.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -21,10 +15,25 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import ca.admin.delivermore.collector.data.entity.Restaurant;
+import ca.admin.delivermore.collector.data.tookan.Driver;
+import ca.admin.delivermore.collector.data.tookan.Drivers;
+import ca.admin.delivermore.collector.data.tookan.Task;
+import ca.admin.delivermore.collector.data.tookan.TaskByOrderDetail;
+import ca.admin.delivermore.collector.data.tookan.TaskByOrderResult;
+import ca.admin.delivermore.collector.data.tookan.TaskCount;
+import ca.admin.delivermore.collector.data.tookan.TaskCountResult;
+import ca.admin.delivermore.collector.data.tookan.TaskDetail;
+import ca.admin.delivermore.collector.data.tookan.TaskDetailList;
+import ca.admin.delivermore.collector.data.tookan.TaskEditResponse;
+import ca.admin.delivermore.collector.data.tookan.TaskList;
+import ca.admin.delivermore.collector.data.tookan.Team;
+import ca.admin.delivermore.collector.data.tookan.Teams;
 
 @SuppressWarnings("serial")
 @Service
@@ -76,7 +85,7 @@ public class RestClientService implements Serializable {
             //log.info("taskList: gettingJSON");
             String taskString = spec.retrieve().toEntity(String.class).block().getBody();
             //TODO: check return status
-            //log.info("taskList String:" + taskString);
+            log.info("taskList String:" + taskString);
             ObjectMapper objectMapper = new ObjectMapper();
             TaskList taskList = null;
             try {
