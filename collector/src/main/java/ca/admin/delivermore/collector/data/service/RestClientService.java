@@ -551,7 +551,8 @@ public class RestClientService implements Serializable {
             //log.info("...No orders returned for restaurant:" + restaurant.getName());
             return null;
         }else{
-            log.info("..Processing order for restaurant:" + restaurant.getName() + " result:  globalOrderString:" + globalOrderString);
+            log.info("..Processing order for restaurant:" + restaurant.getName() + " with global order json size:" + globalOrderString.length());
+            log.debug("......Order Details from JSON:  globalOrderString:" + globalOrderString);
 
         }
         //make sure only valid characters as emoji's cause error in saving to database
