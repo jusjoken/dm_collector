@@ -24,8 +24,8 @@ public class Config {
     private Logger log = LoggerFactory.getLogger(Config.class);
     private final Double driverPayForDelivery = 4.00;
 
-    private final Double serviceFeeGlobal = 11.0;
-    private final Double serviceFeeCustom = 11.0;
+    private final Double serviceFeeGlobal = 14.0;
+    private final Double serviceFeeCustom = 14.0;
     private final Double serviceFeePhonein = 11.0;
 
     private String fromEmail = "tara.birch@delivermore.ca";
