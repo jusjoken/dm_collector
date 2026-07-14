@@ -1,0 +1,4 @@
+2026-07-13 19:18:42.191 INFO c.a.d.c.c.BatchConfigRestaurantMenu [main] restaurantMenuItemReader: checking 1 effective restaurants for menu data
+2026-07-13 19:18:43.345 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:King Palace with json size:128451
+2026-07-13 19:18:43.353 INFO c.a.d.c.c.BatchConfigRestaurantMenu [main] restaurantMenuItemReader: queued 1 menu payloads for import
+2026-07-13 19:18:44.160 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 1 for restaurant King Palace (616253)

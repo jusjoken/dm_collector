@@ -1,8 +1,12 @@
 package ca.admin.delivermore.collector.data.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @IdClass(RestaurantPk.class)
@@ -29,6 +33,9 @@ public class Restaurant{
     private Double deliveryFeeFromVendorWebOrder = 0.0;
 
     private String globalAuthCode = "";
+
+    @Column(name = "fetch_menu_key")
+    private String fetchMenuKey = "";
 
     @Column(name = "start_day_offset", nullable = false)
     private int startDayOffset = 0;
@@ -285,6 +292,14 @@ public class Restaurant{
         this.globalAuthCode = globalAuthCode;
     }
 
+    public String getFetchMenuKey() {
+        return fetchMenuKey;
+    }
+
+    public void setFetchMenuKey(String fetchMenuKey) {
+        this.fetchMenuKey = fetchMenuKey;
+    }
+
     @Override
     public String toString() {
         return "Restaurant{" +
@@ -299,6 +314,7 @@ public class Restaurant{
                 ", deliveryFeeFromVendor=" + deliveryFeeFromVendor +
                 ", deliveryFeeFromVendorWebOrder=" + deliveryFeeFromVendorWebOrder +
                 ", globalAuthCode='" + globalAuthCode + '\'' +
+                ", fetchMenuKey='" + fetchMenuKey + '\'' +
                 ", startDayOffset=" + startDayOffset +
                 ", activeForPayout=" + activeForPayout +
                 ", posGlobal=" + posGlobal +

@@ -42,6 +42,7 @@ public class RestClientService implements Serializable {
     private String tookan_api = "53606482f1430f144a136d654e4f2d471ae1cdfd28d4793e5f1506c4";
     private String tookan_baseUrl = "https://api.tookanapp.com/v2";
     private String global_baseUrl = "https://pos.globalfoodsoft.com/pos/order/pop";
+    private String global_menu_baseUrl = "https://pos.globalfoodsoft.com/pos/menu";
     private Logger log = LoggerFactory.getLogger(RestClientService.class);
 
     /**
@@ -512,13 +513,7 @@ public class RestClientService implements Serializable {
         }
         //log.info("Fetching Global Orders through Gloria Food REST..");
 
-        WebClient myWebClient = WebClient.builder()
-                .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(configurer -> configurer
-                                .defaultCodecs()
-                                .maxInMemorySize(16 * 1024 * 1024))
-                        .build())
-                .build();
+        WebClient myWebClient = getLargeWebClient();
 
         // Fetch from Gloria Food API
         RequestHeadersSpec<?> spec = myWebClient
@@ -556,10 +551,58 @@ public class RestClientService implements Serializable {
 
         }
         //make sure only valid characters as emoji's cause error in saving to database
-        String regex = "[^\\p{L}\\p{N}\\p{P}\\p{Z}]";
-        String result = globalOrderString.replaceAll(regex, "");
+        return sanitizeJsonPayload(globalOrderString);
 
-        return result;
+    }
+
+    public String getGlobalMenuJson(Restaurant restaurant) {
+        if(restaurant.getFetchMenuKey()==null || restaurant.getFetchMenuKey().isEmpty()){
+            log.info("getGlobalMenuJson: No fetch menu key available for restaurant:" + restaurant.getName());
+            return null;
+        }
+
+        RequestHeadersSpec<?> spec = getLargeWebClient()
+                .get()
+                .uri(global_menu_baseUrl)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Glf-Api-Version", "2")
+                .header("Authorization", restaurant.getFetchMenuKey());
+
+        String globalMenuString;
+        try {
+            globalMenuString = spec.retrieve()
+                    .toEntity(String.class)
+                    .filter(entity -> entity.getStatusCode().is2xxSuccessful() && entity.getBody() != null)
+                    .block()
+                    .getBody();
+        } catch (WebClientResponseException e) {
+            log.error("getGlobalMenuJson: error response for restaurant {}: {}", restaurant.getName(), e.getMessage());
+            return null;
+        }
+
+        if(globalMenuString == null || globalMenuString.isBlank()){
+            log.info("getGlobalMenuJson: Empty menu returned for restaurant:" + restaurant.getName());
+            return null;
+        }
+
+        log.info("getGlobalMenuJson: Processing menu for restaurant:{} with json size:{}", restaurant.getName(), globalMenuString.length());
+        log.debug("getGlobalMenuJson: menu payload:{}", globalMenuString);
+        return sanitizeJsonPayload(globalMenuString);
+    }
+
+    private WebClient getLargeWebClient() {
+        return WebClient.builder()
+                .exchangeStrategies(ExchangeStrategies.builder()
+                        .codecs(configurer -> configurer
+                                .defaultCodecs()
+                                .maxInMemorySize(16 * 1024 * 1024))
+                        .build())
+                .build();
+    }
+
+    private String sanitizeJsonPayload(String jsonPayload) {
+        String regex = "[^\\p{L}\\p{N}\\p{P}\\p{Z}]";
+        return jsonPayload.replaceAll(regex, "");
 
     }
 

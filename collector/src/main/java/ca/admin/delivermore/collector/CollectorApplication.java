@@ -32,6 +32,9 @@ public class CollectorApplication {
 			if(checkJob("globalOrderJob", arg)){
 				Config.getInstance().setRunGlobalOrderJob(true);
 			}
+			if(checkJob("restaurantMenuJob", arg)){
+				Config.getInstance().setRunRestaurantMenuJob(true);
+			}
 			if(checkJob("taskJob", arg)){
 				Config.getInstance().setRunTaskJob(true);
 			}

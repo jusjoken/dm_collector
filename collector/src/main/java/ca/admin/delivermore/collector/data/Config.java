@@ -34,6 +34,7 @@ public class Config {
     private Boolean runDriverJob = Boolean.FALSE;
     private Boolean runOrderJob = Boolean.FALSE;
     private Boolean runGlobalOrderJob = Boolean.FALSE;
+    private Boolean runRestaurantMenuJob = Boolean.FALSE;
     private Boolean runTaskJob = Boolean.FALSE;
     private Boolean runRestaurantJob = Boolean.FALSE;
 
@@ -41,6 +42,7 @@ public class Config {
     private Boolean runDriverJobDb = null;
     private Boolean runOrderJobDb = null;
     private Boolean runGlobalOrderJobDb = null;
+    private Boolean runRestaurantMenuJobDb = null;
     private Boolean runTaskJobDb = null;
     private Boolean runRestaurantJobDb = null;
 
@@ -100,6 +102,14 @@ public class Config {
 
     public void setRunGlobalOrderJob(Boolean runGlobalOrderJob) {
         this.runGlobalOrderJob = runGlobalOrderJob;
+    }
+
+    public Boolean getRunRestaurantMenuJob() {
+        return checkJob("restaurantMenuJob", runRestaurantMenuJob);
+    }
+
+    public void setRunRestaurantMenuJob(Boolean runRestaurantMenuJob) {
+        this.runRestaurantMenuJob = runRestaurantMenuJob;
     }
 
     public Boolean getRunTaskJob() {
@@ -174,6 +184,13 @@ public class Config {
                     return runGlobalOrderJobDb;
                 }else{
                     return runGlobalOrderJobDb;
+                }
+            }else if(jobId.equals("restaurantMenuJob")){
+                if(runRestaurantMenuJobDb==null){
+                    runRestaurantMenuJobDb = checkJobDb(jobId);
+                    return runRestaurantMenuJobDb;
+                }else{
+                    return runRestaurantMenuJobDb;
                 }
             }else if(jobId.equals("taskJob")){
                 if(runTaskJobDb==null){

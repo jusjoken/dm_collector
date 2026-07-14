@@ -36,6 +36,18 @@
                 "LAUNCH_WORKSPACE": "${workspaceFolder:dm_collector}"
             },
             "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Collector: restaurantMenuJob",
+            "request": "launch",
+            "mainClass": "ca.admin.delivermore.collector.CollectorApplication",
+            "args": ["restaurantMenuJob"],
+            "envFile": "${workspaceFolder:dm_collector}/.env",
+            "env": {
+                "LAUNCH_WORKSPACE": "${workspaceFolder:dm_collector}"
+            },
+            "console": "integratedTerminal"
         }
     ]
 }

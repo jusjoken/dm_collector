@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<version.major>1</version.major>
-		<version.minor>2</version.minor>
+		<version.minor>3</version.minor>
 	</properties>
 	<dependencies>
 		<dependency>

@@ -1,13 +1,14 @@
 package ca.admin.delivermore.collector.data.service;
 
-import ca.admin.delivermore.collector.data.entity.Restaurant;
-import ca.admin.delivermore.collector.data.entity.RestaurantPk;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.util.List;
+import ca.admin.delivermore.collector.data.entity.Restaurant;
+import ca.admin.delivermore.collector.data.entity.RestaurantPk;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, RestaurantPk> {
 
@@ -49,6 +50,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Restaura
 
     @Query("select r from Restaurant r where r.useInvoiceProcessing = true and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null)) order by r.name")
     List<Restaurant> getEffectiveInvoicedVendor(@Param("dateEffective") LocalDate dateEffective);
+
+    @Query("select r from Restaurant r where r.fetchMenuKey is not null and r.fetchMenuKey <> '' and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null)) order by r.name")
+    List<Restaurant> getEffectiveRestaurantsWithMenuKey(@Param("dateEffective") LocalDate dateEffective);
 
 
     /* query for restaurant_new to get single effective row
