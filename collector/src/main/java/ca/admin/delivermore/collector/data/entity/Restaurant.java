@@ -28,6 +28,9 @@ public class Restaurant{
 
     private Double commissionPerDelivery = 0.0;
 
+    @Column(name = "delivery_fee")
+    private Double deliveryFee = 0.0;
+
     private Double deliveryFeeFromVendor = 0.0;
 
     private Double deliveryFeeFromVendorWebOrder = 0.0;
@@ -126,6 +129,9 @@ public class Restaurant{
     @Column(name = "use_invoice_processing")
     private Boolean useInvoiceProcessing = Boolean.FALSE;
 
+    @Column(name = "auto_approve_orders", nullable = false)
+    private boolean autoApproveOrders;
+
     public Restaurant() {
         super();
     }
@@ -211,6 +217,14 @@ public class Restaurant{
         this.commissionPerDelivery = commissionPerDelivery;
     }
 
+    public Double getDeliveryFee() {
+        return deliveryFee;
+    }
+
+    public void setDeliveryFee(Double deliveryFee) {
+        this.deliveryFee = deliveryFee;
+    }
+
     @Column(name = "commission_per_phonein")
     private Double commissionPerPhonein;
 
@@ -242,6 +256,14 @@ public class Restaurant{
 
     public void setUseInvoiceProcessing(Boolean useInvoiceProcessing) {
         this.useInvoiceProcessing = useInvoiceProcessing;
+    }
+
+    public boolean getAutoApproveOrders() {
+        return autoApproveOrders;
+    }
+
+    public void setAutoApproveOrders(boolean autoApproveOrders) {
+        this.autoApproveOrders = autoApproveOrders;
     }
 
     public Double getDriverPayOverride() {
@@ -311,6 +333,7 @@ public class Restaurant{
                 ", formId=" + formId +
                 ", commissionRate=" + commissionRate +
                 ", commissionPerDelivery=" + commissionPerDelivery +
+                ", deliveryFee=" + deliveryFee +
                 ", deliveryFeeFromVendor=" + deliveryFeeFromVendor +
                 ", deliveryFeeFromVendorWebOrder=" + deliveryFeeFromVendorWebOrder +
                 ", globalAuthCode='" + globalAuthCode + '\'' +
@@ -321,6 +344,7 @@ public class Restaurant{
                 ", posPhonein=" + posPhonein +
                 ", email='" + email + '\'' +
                 ", processOrderText=" + processOrderText +
+                ", autoApproveOrders=" + autoApproveOrders +
                 ", commissionRatePhonein=" + commissionRatePhonein +
                 ", commissionPerPhonein=" + commissionPerPhonein +
                 '}';

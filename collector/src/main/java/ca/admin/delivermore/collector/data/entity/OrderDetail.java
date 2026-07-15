@@ -1,16 +1,20 @@
 package ca.admin.delivermore.collector.data.entity;
 
-import ca.admin.delivermore.collector.data.Utility;
 import com.opencsv.bean.CsvBindByName;
 
-import jakarta.persistence.*;
+import ca.admin.delivermore.collector.data.Utility;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class OrderDetail {
 
     public enum Source{
-        CSV, JSON;
+        CSV, JSON, DM;
     }
 
     @NotNull
