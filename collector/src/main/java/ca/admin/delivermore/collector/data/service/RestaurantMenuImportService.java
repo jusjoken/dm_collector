@@ -42,6 +42,10 @@ public class RestaurantMenuImportService {
     private static final String MENU_EDITOR_SETTINGS_SECTION = "menu_editor";
     private static final String ITEM_TAG_OPTIONS_SETTING = "item_tag_options";
     private static final String ITEM_ALLERGEN_OPTIONS_SETTING = "item_allergen_options";
+    private static final String OPTION_GROUP_MAJOR_GROUP_SETTING_PREFIX = "option_group_major_group_";
+    private static final String OPTION_GROUP_TAXATION_CATEGORY_SETTING_PREFIX = "option_group_taxation_category_";
+    private static final String DEFAULT_IMPORTED_MAJOR_GROUP = "Food";
+    private static final String DEFAULT_IMPORTED_TAXATION_CATEGORY = "Food";
 
     private final RestaurantMenuVersionRepository restaurantMenuVersionRepository;
     private final RestaurantMenuCategoryRepository restaurantMenuCategoryRepository;
@@ -236,11 +240,22 @@ public class RestaurantMenuImportService {
             category.setActiveEnd(getTextValue(categoryNode, "active_end"));
             category.setActiveDays(getIntegerValue(categoryNode, "active_days"));
             category.setPictureId(getLongValue(categoryNode, "picture_id"));
-            category.setDisplayOrder(categoryOrder++);
+            category.setDisplayOrder(resolveDisplayOrder(categoryNode, categoryOrder++));
             category = restaurantMenuCategoryRepository.save(category);
 
-            persistOptionGroups(menuVersionId, category.getId(), null, null, sourceMenuId, categoryNode.path("groups"));
-            persistItems(menuVersionId, category, categoryNode.path("items"), discoveredItemTags, discoveredItemAllergens);
+                persistOptionGroups(
+                    menuVersionId,
+                    category.getId(),
+                    null,
+                    null,
+                    sourceMenuId,
+                        categoryNode.path("groups"));
+                persistItems(
+                    menuVersionId,
+                    category,
+                    categoryNode.path("items"),
+                    discoveredItemTags,
+                        discoveredItemAllergens);
         }
     }
 
@@ -275,7 +290,7 @@ public class RestaurantMenuImportService {
             // New normalized fields are the source of truth; keep legacy JSON columns empty.
             item.setTagsJson(null);
             item.setExtrasJson(null);
-            item.setDisplayOrder(itemOrder++);
+            item.setDisplayOrder(resolveDisplayOrder(itemNode, itemOrder++));
             item = restaurantMenuItemRepository.save(item);
 
             List<String> itemTags = readStringArrayWithFallback(itemNode, "tags");
@@ -287,8 +302,18 @@ public class RestaurantMenuImportService {
             persistItemAllergens(item, itemAllergens);
             persistItemNutrition(item, readNutritionValues(itemNode));
 
-            persistOptionGroups(menuVersionId, null, item.getId(), null, category.getSourceMenuId(), itemNode.path("groups"));
-            persistItemSizes(menuVersionId, item, category.getSourceMenuId(), itemNode.path("sizes"));
+                persistOptionGroups(
+                    menuVersionId,
+                    null,
+                    item.getId(),
+                    null,
+                    category.getSourceMenuId(),
+                        itemNode.path("groups"));
+                persistItemSizes(
+                    menuVersionId,
+                    item,
+                    category.getSourceMenuId(),
+                        itemNode.path("sizes"));
         }
     }
 
@@ -329,7 +354,11 @@ public class RestaurantMenuImportService {
         }
     }
 
-    private void persistItemSizes(Long menuVersionId, RestaurantMenuItem item, Long sourceMenuId, JsonNode sizesNode) {
+        private void persistItemSizes(
+            Long menuVersionId,
+            RestaurantMenuItem item,
+            Long sourceMenuId,
+                JsonNode sizesNode) {
         if(!sizesNode.isArray()){
             return;
         }
@@ -348,11 +377,23 @@ public class RestaurantMenuImportService {
             itemSize.setDisplayOrder(sizeOrder++);
             itemSize = restaurantMenuItemSizeRepository.save(itemSize);
 
-            persistOptionGroups(menuVersionId, null, null, itemSize.getId(), sourceMenuId, sizeNode.path("groups"));
+            persistOptionGroups(
+                    menuVersionId,
+                    null,
+                    null,
+                    itemSize.getId(),
+                    sourceMenuId,
+                    sizeNode.path("groups"));
         }
     }
 
-    private void persistOptionGroups(Long menuVersionId, Long categoryId, Long itemId, Long itemSizeId, Long sourceMenuId, JsonNode groupsNode) {
+    private void persistOptionGroups(
+            Long menuVersionId,
+            Long categoryId,
+            Long itemId,
+            Long itemSizeId,
+            Long sourceMenuId,
+            JsonNode groupsNode) {
         if(!groupsNode.isArray()){
             return;
         }
@@ -371,8 +412,11 @@ public class RestaurantMenuImportService {
             optionGroup.setAllowQuantity(getBooleanValue(groupNode, "allow_quantity"));
             optionGroup.setForceMin(getIntegerValue(groupNode, "force_min"));
             optionGroup.setForceMax(getIntegerValue(groupNode, "force_max"));
-            optionGroup.setDisplayOrder(groupOrder++);
+            optionGroup.setDisplayOrder(resolveDisplayOrder(groupNode, groupOrder++));
             optionGroup = restaurantMenuOptionGroupRepository.save(optionGroup);
+
+            saveStringSetting(optionGroupMajorGroupSettingName(optionGroup.getId()), DEFAULT_IMPORTED_MAJOR_GROUP);
+            saveStringSetting(optionGroupTaxationCategorySettingName(optionGroup.getId()), DEFAULT_IMPORTED_TAXATION_CATEGORY);
 
             persistOptions(menuVersionId, optionGroup, groupNode.path("options"));
         }
@@ -398,7 +442,7 @@ public class RestaurantMenuImportService {
             option.setAdditives(readTextWithFallback(optionNode, "additives", "menu_item_additives"));
             option.setNutritionalValuesSize(readNutritionSize(optionNode));
             option.setExtrasJson(null);
-            option.setDisplayOrder(optionOrder++);
+            option.setDisplayOrder(resolveDisplayOrder(optionNode, optionOrder++));
             option = restaurantMenuOptionRepository.save(option);
 
             persistOptionTags(option, readStringArrayWithFallback(optionNode, "tags"));
@@ -599,6 +643,34 @@ public class RestaurantMenuImportService {
         settingRepository.save(setting);
     }
 
+    private String optionGroupMajorGroupSettingName(Long optionGroupId) {
+        return OPTION_GROUP_MAJOR_GROUP_SETTING_PREFIX + optionGroupId;
+    }
+
+    private String optionGroupTaxationCategorySettingName(Long optionGroupId) {
+        return OPTION_GROUP_TAXATION_CATEGORY_SETTING_PREFIX + optionGroupId;
+    }
+
+    private void saveStringSetting(String settingName, String value) {
+        SettingEntity setting = settingRepository.findBySectionAndName(MENU_EDITOR_SETTINGS_SECTION, settingName);
+        if (setting == null) {
+            setting = new SettingEntity();
+            setting.setSection(MENU_EDITOR_SETTINGS_SECTION);
+            setting.setName(settingName);
+            setting.setDescription("Menu editor choice-group imported metadata");
+            setting.setValueType(SettingEntity.ValueType.STRING);
+        }
+
+        String cleaned = trimToNull(value);
+        if (cleaned == null) {
+            settingRepository.delete(setting);
+            return;
+        }
+
+        setting.setValue(cleaned);
+        settingRepository.save(setting);
+    }
+
     private JsonNode readMenuRoot(String rawJson) {
         try {
             return objectMapper.readTree(rawJson);
@@ -656,5 +728,32 @@ public class RestaurantMenuImportService {
             return null;
         }
         return value.asBoolean();
+    }
+
+    private Integer resolveDisplayOrder(JsonNode node, int fallbackIndex) {
+        Integer sourceSort = getStrictIntegerValue(node, "sort");
+        return sourceSort != null ? sourceSort : fallbackIndex;
+    }
+
+    private Integer getStrictIntegerValue(JsonNode node, String fieldName) {
+        JsonNode value = node.path(fieldName);
+        if (value.isMissingNode() || value.isNull()) {
+            return null;
+        }
+        if (value.isInt() || value.isLong()) {
+            return value.intValue();
+        }
+        if (value.isTextual()) {
+            String text = trimToNull(value.asText());
+            if (text == null) {
+                return null;
+            }
+            try {
+                return Integer.valueOf(text);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
     }
 }
