@@ -45,6 +45,10 @@ public class BatchConfigRestaurantMenu {
             List<Restaurant> restaurants = restaurantRepository.getEffectiveRestaurantsWithMenuKey(LocalDate.now());
             log.info("restaurantMenuItemReader: checking {} effective restaurants for menu data", restaurants.size());
             for (Restaurant restaurant : restaurants) {
+                if(restaurantMenuImportService.isPullLocked(restaurant.getRestaurantId())){
+                    log.info("restaurantMenuItemReader: skipping restaurant {} ({}) because a draft version exists", restaurant.getName(), restaurant.getRestaurantId());
+                    continue;
+                }
                 String menuJson = restClientService.getGlobalMenuJson(restaurant);
                 if(menuJson != null){
                     menusToImport.add(new RestaurantMenuImportPayload(restaurant.getRestaurantId(), restaurant.getName(), menuJson));

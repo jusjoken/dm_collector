@@ -4,12 +4,20 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class RestaurantMenuVersion {
+
+    public enum WorkflowStatus {
+        PULLED,
+        DRAFT,
+        PUBLISHED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +35,10 @@ public class RestaurantMenuVersion {
 
     @Column(name = "active", nullable = false)
     private Boolean active = Boolean.TRUE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "workflow_status", nullable = false)
+    private WorkflowStatus workflowStatus = WorkflowStatus.PULLED;
 
     @Column(name = "currency")
     private String currency;
@@ -99,5 +111,13 @@ public class RestaurantMenuVersion {
 
     public void setRawJson(String rawJson) {
         this.rawJson = rawJson;
+    }
+
+    public WorkflowStatus getWorkflowStatus() {
+        return workflowStatus;
+    }
+
+    public void setWorkflowStatus(WorkflowStatus workflowStatus) {
+        this.workflowStatus = workflowStatus;
     }
 }

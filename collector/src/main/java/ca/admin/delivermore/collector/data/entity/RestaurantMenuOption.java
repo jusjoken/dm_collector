@@ -35,6 +35,18 @@ public class RestaurantMenuOption {
     @Column(name = "default_option")
     private Boolean defaultOption;
 
+    @Column(name = "out_of_stock")
+    private Boolean outOfStock;
+
+    @Column(name = "ingredients", columnDefinition = "LONGTEXT")
+    private String ingredients;
+
+    @Column(name = "additives", columnDefinition = "LONGTEXT")
+    private String additives;
+
+    @Column(name = "nutritional_values_size")
+    private String nutritionalValuesSize;
+
     @Column(name = "extras_json", columnDefinition = "LONGTEXT")
     private String extrasJson;
 
@@ -103,6 +115,38 @@ public class RestaurantMenuOption {
 
     public void setDefaultOption(Boolean defaultOption) {
         this.defaultOption = defaultOption;
+    }
+
+    public Boolean getOutOfStock() {
+        return outOfStock;
+    }
+
+    public void setOutOfStock(Boolean outOfStock) {
+        this.outOfStock = outOfStock;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public String getAdditives() {
+        return additives;
+    }
+
+    public void setAdditives(String additives) {
+        this.additives = additives;
+    }
+
+    public String getNutritionalValuesSize() {
+        return nutritionalValuesSize;
+    }
+
+    public void setNutritionalValuesSize(String nutritionalValuesSize) {
+        this.nutritionalValuesSize = nutritionalValuesSize;
     }
 
     public String getExtrasJson() {

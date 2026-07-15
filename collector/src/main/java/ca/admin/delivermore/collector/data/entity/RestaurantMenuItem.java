@@ -47,6 +47,18 @@ public class RestaurantMenuItem {
     @Column(name = "active_days")
     private Integer activeDays;
 
+    @Column(name = "out_of_stock")
+    private Boolean outOfStock;
+
+    @Column(name = "ingredients", columnDefinition = "LONGTEXT")
+    private String ingredients;
+
+    @Column(name = "additives", columnDefinition = "LONGTEXT")
+    private String additives;
+
+    @Column(name = "nutritional_values_size")
+    private String nutritionalValuesSize;
+
     @Column(name = "tags_json", columnDefinition = "LONGTEXT")
     private String tagsJson;
 
@@ -150,6 +162,38 @@ public class RestaurantMenuItem {
 
     public void setActiveDays(Integer activeDays) {
         this.activeDays = activeDays;
+    }
+
+    public Boolean getOutOfStock() {
+        return outOfStock;
+    }
+
+    public void setOutOfStock(Boolean outOfStock) {
+        this.outOfStock = outOfStock;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public String getAdditives() {
+        return additives;
+    }
+
+    public void setAdditives(String additives) {
+        this.additives = additives;
+    }
+
+    public String getNutritionalValuesSize() {
+        return nutritionalValuesSize;
+    }
+
+    public void setNutritionalValuesSize(String nutritionalValuesSize) {
+        this.nutritionalValuesSize = nutritionalValuesSize;
     }
 
     public String getTagsJson() {

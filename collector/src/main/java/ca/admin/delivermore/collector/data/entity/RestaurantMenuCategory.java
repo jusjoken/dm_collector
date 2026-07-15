@@ -26,6 +26,9 @@ public class RestaurantMenuCategory {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "description", columnDefinition = "LONGTEXT")
+    private String description;
+
     @Column(name = "active")
     private Boolean active;
 
@@ -82,6 +85,14 @@ public class RestaurantMenuCategory {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Boolean getActive() {
