@@ -67,6 +67,9 @@ public class StagedRestaurantOrder {
     @Column(name = "service_fee", nullable = false)
     private Double serviceFee = 0.0;
 
+    @Column(name = "service_fee_tax", nullable = false)
+    private Double serviceFeeTax = 0.0;
+
     @Column(name = "gst", nullable = false)
     private Double gst = 0.0;
 
@@ -239,6 +242,14 @@ public class StagedRestaurantOrder {
 
     public void setServiceFee(Double serviceFee) {
         this.serviceFee = serviceFee;
+    }
+
+    public Double getServiceFeeTax() {
+        return serviceFeeTax;
+    }
+
+    public void setServiceFeeTax(Double serviceFeeTax) {
+        this.serviceFeeTax = serviceFeeTax;
     }
 
     public Double getGst() {

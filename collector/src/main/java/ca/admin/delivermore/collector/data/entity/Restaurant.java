@@ -26,6 +26,9 @@ public class Restaurant{
 
     private Double commissionRate = 0.0;
 
+    @Column(name = "service_fee_rate")
+    private Double serviceFeeRate = 0.0;
+
     private Double commissionPerDelivery = 0.0;
 
     @Column(name = "delivery_fee")
@@ -190,6 +193,14 @@ public class Restaurant{
         this.commissionRate = commissionRate;
     }
 
+    public Double getServiceFeeRate() {
+        return serviceFeeRate;
+    }
+
+    public void setServiceFeeRate(Double serviceFeeRate) {
+        this.serviceFeeRate = serviceFeeRate;
+    }
+
     @Column(name = "commission_rate_phonein")
     private Double commissionRatePhonein;
 
@@ -332,6 +343,7 @@ public class Restaurant{
                 ", name='" + name + '\'' +
                 ", formId=" + formId +
                 ", commissionRate=" + commissionRate +
+                ", serviceFeeRate=" + serviceFeeRate +
                 ", commissionPerDelivery=" + commissionPerDelivery +
                 ", deliveryFee=" + deliveryFee +
                 ", deliveryFeeFromVendor=" + deliveryFeeFromVendor +

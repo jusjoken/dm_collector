@@ -19,6 +19,12 @@ public class StagedRestaurantOrderTaxRate {
     @Column(name = "taxation_category", nullable = false)
     private String taxationCategory;
 
+    @Column(name = "tax_scope", nullable = false)
+    private String taxScope = "CATEGORY";
+
+    @Column(name = "tax_name")
+    private String taxName;
+
     @Column(name = "rate_percent", nullable = false)
     private Double ratePercent;
 
@@ -44,6 +50,22 @@ public class StagedRestaurantOrderTaxRate {
 
     public void setTaxationCategory(String taxationCategory) {
         this.taxationCategory = taxationCategory;
+    }
+
+    public String getTaxScope() {
+        return taxScope;
+    }
+
+    public void setTaxScope(String taxScope) {
+        this.taxScope = taxScope;
+    }
+
+    public String getTaxName() {
+        return taxName;
+    }
+
+    public void setTaxName(String taxName) {
+        this.taxName = taxName;
     }
 
     public Double getRatePercent() {
