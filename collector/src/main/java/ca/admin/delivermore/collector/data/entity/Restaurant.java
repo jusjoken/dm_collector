@@ -135,6 +135,12 @@ public class Restaurant{
     @Column(name = "auto_approve_orders", nullable = false)
     private boolean autoApproveOrders;
 
+    @Column(name = "send_to_tablet", nullable = false)
+    private boolean sendToTablet;
+
+    @Column(name = "send_to_tookan", nullable = false)
+    private boolean sendToTookan;
+
     public Restaurant() {
         super();
     }
@@ -277,6 +283,22 @@ public class Restaurant{
         this.autoApproveOrders = autoApproveOrders;
     }
 
+    public boolean getSendToTablet() {
+        return sendToTablet;
+    }
+
+    public void setSendToTablet(boolean sendToTablet) {
+        this.sendToTablet = sendToTablet;
+    }
+
+    public boolean getSendToTookan() {
+        return sendToTookan;
+    }
+
+    public void setSendToTookan(boolean sendToTookan) {
+        this.sendToTookan = sendToTookan;
+    }
+
     public Double getDriverPayOverride() {
         return driverPayOverride;
     }
@@ -357,6 +379,8 @@ public class Restaurant{
                 ", email='" + email + '\'' +
                 ", processOrderText=" + processOrderText +
                 ", autoApproveOrders=" + autoApproveOrders +
+                ", sendToTablet=" + sendToTablet +
+                ", sendToTookan=" + sendToTookan +
                 ", commissionRatePhonein=" + commissionRatePhonein +
                 ", commissionPerPhonein=" + commissionPerPhonein +
                 '}';
