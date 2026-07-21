@@ -6,5 +6,7 @@ import ca.admin.delivermore.collector.data.entity.RestaurantMenuCategory;
 
 public interface RestaurantMenuCategoryRepository extends JpaRepository<RestaurantMenuCategory, Long> {
 
+    long countByImageAssetId(Long imageAssetId);
+
     void deleteByMenuVersionId(Long menuVersionId);
 }

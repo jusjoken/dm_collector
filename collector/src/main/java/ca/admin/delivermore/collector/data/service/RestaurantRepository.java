@@ -12,6 +12,8 @@ import ca.admin.delivermore.collector.data.entity.RestaurantPk;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, RestaurantPk> {
 
+    long countByLogoImageAssetId(Long logoImageAssetId);
+
     @Query("select t from Restaurant t WHERE t.restaurantId = :restaurantId")
     List<Restaurant> findByRestaurantId(@Param("restaurantId") Long restaurantId);
 

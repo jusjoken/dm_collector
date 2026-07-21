@@ -10,6 +10,8 @@ import ca.admin.delivermore.collector.data.entity.RestaurantMenuVersion.Workflow
 
 public interface RestaurantMenuVersionRepository extends JpaRepository<RestaurantMenuVersion, Long> {
 
+    long countByHeaderImageAssetId(Long headerImageAssetId);
+
     RestaurantMenuVersion findTopByRestaurantIdOrderByVersionNumberDesc(Long restaurantId);
 
     RestaurantMenuVersion findTopByRestaurantIdAndWorkflowStatusOrderByVersionNumberDesc(Long restaurantId, WorkflowStatus workflowStatus);

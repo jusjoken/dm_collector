@@ -44,6 +44,9 @@ public class RestaurantMenuCategory {
     @Column(name = "picture_id")
     private Long pictureId;
 
+    @Column(name = "image_asset_id")
+    private Long imageAssetId;
+
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder = 0;
 
@@ -133,6 +136,14 @@ public class RestaurantMenuCategory {
 
     public void setPictureId(Long pictureId) {
         this.pictureId = pictureId;
+    }
+
+    public Long getImageAssetId() {
+        return imageAssetId;
+    }
+
+    public void setImageAssetId(Long imageAssetId) {
+        this.imageAssetId = imageAssetId;
     }
 
     public Integer getDisplayOrder() {

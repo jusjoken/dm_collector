@@ -141,6 +141,9 @@ public class Restaurant{
     @Column(name = "send_to_tookan", nullable = false)
     private boolean sendToTookan;
 
+    @Column(name = "logo_image_asset_id")
+    private Long logoImageAssetId;
+
     public Restaurant() {
         super();
     }
@@ -299,6 +302,14 @@ public class Restaurant{
         this.sendToTookan = sendToTookan;
     }
 
+    public Long getLogoImageAssetId() {
+        return logoImageAssetId;
+    }
+
+    public void setLogoImageAssetId(Long logoImageAssetId) {
+        this.logoImageAssetId = logoImageAssetId;
+    }
+
     public Double getDriverPayOverride() {
         return driverPayOverride;
     }
@@ -381,6 +392,7 @@ public class Restaurant{
                 ", autoApproveOrders=" + autoApproveOrders +
                 ", sendToTablet=" + sendToTablet +
                 ", sendToTookan=" + sendToTookan +
+                ", logoImageAssetId=" + logoImageAssetId +
                 ", commissionRatePhonein=" + commissionRatePhonein +
                 ", commissionPerPhonein=" + commissionPerPhonein +
                 '}';

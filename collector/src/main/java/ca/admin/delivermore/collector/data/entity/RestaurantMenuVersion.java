@@ -49,6 +49,9 @@ public class RestaurantMenuVersion {
     @Column(name = "raw_json", columnDefinition = "LONGTEXT", nullable = false)
     private String rawJson;
 
+    @Column(name = "header_image_asset_id")
+    private Long headerImageAssetId;
+
     public Long getId() {
         return id;
     }
@@ -111,6 +114,14 @@ public class RestaurantMenuVersion {
 
     public void setRawJson(String rawJson) {
         this.rawJson = rawJson;
+    }
+
+    public Long getHeaderImageAssetId() {
+        return headerImageAssetId;
+    }
+
+    public void setHeaderImageAssetId(Long headerImageAssetId) {
+        this.headerImageAssetId = headerImageAssetId;
     }
 
     public WorkflowStatus getWorkflowStatus() {
