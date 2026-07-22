@@ -55,6 +55,24 @@ public class StagedRestaurantOrder {
     @Column(name = "postal_code")
     private String postalCode;
 
+    @Column(name = "customer_profile_id")
+    private Long customerProfileId;
+
+    @Column(name = "customer_latitude")
+    private Double customerLatitude;
+
+    @Column(name = "customer_longitude")
+    private Double customerLongitude;
+
+    @Column(name = "location_confirmed_at")
+    private LocalDateTime locationConfirmedAt;
+
+    @Column(name = "delivery_distance_km")
+    private Double deliveryDistanceKm = 0.0;
+
+    @Column(name = "delivery_zone_name")
+    private String deliveryZoneName;
+
     @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
 
@@ -210,6 +228,54 @@ public class StagedRestaurantOrder {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public Long getCustomerProfileId() {
+        return customerProfileId;
+    }
+
+    public void setCustomerProfileId(Long customerProfileId) {
+        this.customerProfileId = customerProfileId;
+    }
+
+    public Double getCustomerLatitude() {
+        return customerLatitude;
+    }
+
+    public void setCustomerLatitude(Double customerLatitude) {
+        this.customerLatitude = customerLatitude;
+    }
+
+    public Double getCustomerLongitude() {
+        return customerLongitude;
+    }
+
+    public void setCustomerLongitude(Double customerLongitude) {
+        this.customerLongitude = customerLongitude;
+    }
+
+    public LocalDateTime getLocationConfirmedAt() {
+        return locationConfirmedAt;
+    }
+
+    public void setLocationConfirmedAt(LocalDateTime locationConfirmedAt) {
+        this.locationConfirmedAt = locationConfirmedAt;
+    }
+
+    public Double getDeliveryDistanceKm() {
+        return deliveryDistanceKm;
+    }
+
+    public void setDeliveryDistanceKm(Double deliveryDistanceKm) {
+        this.deliveryDistanceKm = deliveryDistanceKm;
+    }
+
+    public String getDeliveryZoneName() {
+        return deliveryZoneName;
+    }
+
+    public void setDeliveryZoneName(String deliveryZoneName) {
+        this.deliveryZoneName = deliveryZoneName;
     }
 
     public String getPaymentMethod() {

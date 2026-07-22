@@ -1,6 +1,7 @@
 package ca.admin.delivermore.collector.data.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -143,6 +144,18 @@ public class Restaurant{
 
     @Column(name = "logo_image_asset_id")
     private Long logoImageAssetId;
+
+    @Column(name = "location_address", length = 1000)
+    private String locationAddress;
+
+    @Column(name = "location_latitude")
+    private Double locationLatitude;
+
+    @Column(name = "location_longitude")
+    private Double locationLongitude;
+
+    @Column(name = "location_verified_at")
+    private LocalDateTime locationVerifiedAt;
 
     public Restaurant() {
         super();
@@ -310,6 +323,38 @@ public class Restaurant{
         this.logoImageAssetId = logoImageAssetId;
     }
 
+    public String getLocationAddress() {
+        return locationAddress;
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
+    }
+
+    public Double getLocationLatitude() {
+        return locationLatitude;
+    }
+
+    public void setLocationLatitude(Double locationLatitude) {
+        this.locationLatitude = locationLatitude;
+    }
+
+    public Double getLocationLongitude() {
+        return locationLongitude;
+    }
+
+    public void setLocationLongitude(Double locationLongitude) {
+        this.locationLongitude = locationLongitude;
+    }
+
+    public LocalDateTime getLocationVerifiedAt() {
+        return locationVerifiedAt;
+    }
+
+    public void setLocationVerifiedAt(LocalDateTime locationVerifiedAt) {
+        this.locationVerifiedAt = locationVerifiedAt;
+    }
+
     public Double getDriverPayOverride() {
         return driverPayOverride;
     }
@@ -393,6 +438,10 @@ public class Restaurant{
                 ", sendToTablet=" + sendToTablet +
                 ", sendToTookan=" + sendToTookan +
                 ", logoImageAssetId=" + logoImageAssetId +
+                ", locationAddress='" + locationAddress + '\'' +
+                ", locationLatitude=" + locationLatitude +
+                ", locationLongitude=" + locationLongitude +
+                ", locationVerifiedAt=" + locationVerifiedAt +
                 ", commissionRatePhonein=" + commissionRatePhonein +
                 ", commissionPerPhonein=" + commissionPerPhonein +
                 '}';
