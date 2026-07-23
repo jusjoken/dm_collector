@@ -18,7 +18,8 @@ public class StagedRestaurantOrder {
         PENDING_APPROVAL,
         APPROVED,
         DECLINED,
-        CANCELED
+        CANCELED,
+        MISSED
     }
 
     @Id
@@ -100,6 +101,12 @@ public class StagedRestaurantOrder {
     @Column(name = "delivery_fee_tax", nullable = false)
     private Double deliveryFeeTax = 0.0;
 
+    @Column(name = "drive_minutes_to_customer")
+    private Integer driveMinutesToCustomer;
+
+    @Column(name = "restaurant_minutes_to_customer")
+    private Integer restaurantMinutesToCustomer;
+
     @Column(name = "tip", nullable = false)
     private Double tip = 0.0;
 
@@ -124,6 +131,9 @@ public class StagedRestaurantOrder {
 
     @Column(name = "approval_requested_at")
     private LocalDateTime approvalRequestedAt;
+
+    @Column(name = "checkout_timeout_minutes")
+    private Integer checkoutTimeoutMinutes;
 
     @Column(name = "approved_at")
     private LocalDateTime approvedAt;
@@ -350,6 +360,22 @@ public class StagedRestaurantOrder {
         this.deliveryFeeTax = deliveryFeeTax;
     }
 
+    public Integer getDriveMinutesToCustomer() {
+        return driveMinutesToCustomer;
+    }
+
+    public void setDriveMinutesToCustomer(Integer driveMinutesToCustomer) {
+        this.driveMinutesToCustomer = driveMinutesToCustomer;
+    }
+
+    public Integer getRestaurantMinutesToCustomer() {
+        return restaurantMinutesToCustomer;
+    }
+
+    public void setRestaurantMinutesToCustomer(Integer restaurantMinutesToCustomer) {
+        this.restaurantMinutesToCustomer = restaurantMinutesToCustomer;
+    }
+
     public Double getTotal() {
         return total;
     }
@@ -412,6 +438,14 @@ public class StagedRestaurantOrder {
 
     public void setApprovalRequestedAt(LocalDateTime approvalRequestedAt) {
         this.approvalRequestedAt = approvalRequestedAt;
+    }
+
+    public Integer getCheckoutTimeoutMinutes() {
+        return checkoutTimeoutMinutes;
+    }
+
+    public void setCheckoutTimeoutMinutes(Integer checkoutTimeoutMinutes) {
+        this.checkoutTimeoutMinutes = checkoutTimeoutMinutes;
     }
 
     public LocalDateTime getApprovedAt() {

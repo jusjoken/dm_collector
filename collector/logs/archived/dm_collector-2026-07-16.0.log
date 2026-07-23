@@ -1,0 +1,12 @@
+2026-07-16 09:53:27.257 INFO c.a.d.c.c.BatchConfigRestaurantMenu [main] restaurantMenuItemReader: checking 5 effective restaurants for menu data
+2026-07-16 09:53:28.452 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:Edo Japan with json size:96419
+2026-07-16 09:53:28.662 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:King Palace with json size:128451
+2026-07-16 09:53:28.862 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:OPA! with json size:68404
+2026-07-16 09:53:29.076 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:Original Joe's Strathmore with json size:109543
+2026-07-16 09:53:29.337 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:Pho Minh with json size:125803
+2026-07-16 09:53:29.343 INFO c.a.d.c.c.BatchConfigRestaurantMenu [main] restaurantMenuItemReader: queued 5 menu payloads for import
+2026-07-16 09:53:30.744 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 7 for restaurant Edo Japan (402973)
+2026-07-16 09:53:31.929 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 8 for restaurant King Palace (616253)
+2026-07-16 09:53:33.308 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 7 for restaurant OPA! (402985)
+2026-07-16 09:53:34.785 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 7 for restaurant Original Joe's Strathmore (402986)
+2026-07-16 09:53:37.550 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 7 for restaurant Pho Minh (402990)

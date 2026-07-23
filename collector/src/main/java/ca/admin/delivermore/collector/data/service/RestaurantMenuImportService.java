@@ -228,6 +228,7 @@ public class RestaurantMenuImportService {
         }
 
         int categoryOrder = 0;
+        Set<Integer> usedCategoryOrders = new LinkedHashSet<>();
         for (JsonNode categoryNode : categoriesNode) {
             RestaurantMenuCategory category = new RestaurantMenuCategory();
             category.setMenuVersionId(menuVersionId);
@@ -240,7 +241,7 @@ public class RestaurantMenuImportService {
             category.setActiveEnd(getTextValue(categoryNode, "active_end"));
             category.setActiveDays(getIntegerValue(categoryNode, "active_days"));
             category.setPictureId(getLongValue(categoryNode, "picture_id"));
-            category.setDisplayOrder(resolveDisplayOrder(categoryNode, categoryOrder++));
+            category.setDisplayOrder(resolveDisplayOrder(categoryNode, categoryOrder++, usedCategoryOrders));
             category = restaurantMenuCategoryRepository.save(category);
 
                 persistOptionGroups(
@@ -270,6 +271,7 @@ public class RestaurantMenuImportService {
         }
 
         int itemOrder = 0;
+        Set<Integer> usedItemOrders = new LinkedHashSet<>();
         for (JsonNode itemNode : itemsNode) {
             RestaurantMenuItem item = new RestaurantMenuItem();
             item.setMenuVersionId(menuVersionId);
@@ -290,7 +292,7 @@ public class RestaurantMenuImportService {
             // New normalized fields are the source of truth; keep legacy JSON columns empty.
             item.setTagsJson(null);
             item.setExtrasJson(null);
-            item.setDisplayOrder(resolveDisplayOrder(itemNode, itemOrder++));
+            item.setDisplayOrder(resolveDisplayOrder(itemNode, itemOrder++, usedItemOrders));
             item = restaurantMenuItemRepository.save(item);
 
             List<String> itemTags = readStringArrayWithFallback(itemNode, "tags");
@@ -399,20 +401,26 @@ public class RestaurantMenuImportService {
         }
 
         int groupOrder = 0;
+        Set<Integer> usedGroupOrders = new LinkedHashSet<>();
         for (JsonNode groupNode : groupsNode) {
             RestaurantMenuOptionGroup optionGroup = new RestaurantMenuOptionGroup();
             optionGroup.setMenuVersionId(menuVersionId);
             optionGroup.setCategoryId(categoryId);
             optionGroup.setItemId(itemId);
             optionGroup.setItemSizeId(itemSizeId);
-            optionGroup.setSourceGroupId(getLongValue(groupNode, "id"));
+            Long sourceGroupId = getLongValue(groupNode, "id");
+            optionGroup.setSourceGroupId(sourceGroupId);
             optionGroup.setSourceMenuId(sourceMenuId);
             optionGroup.setName(getTextValue(groupNode, "name"));
             optionGroup.setRequiredSelection(getBooleanValue(groupNode, "required"));
             optionGroup.setAllowQuantity(getBooleanValue(groupNode, "allow_quantity"));
             optionGroup.setForceMin(getIntegerValue(groupNode, "force_min"));
             optionGroup.setForceMax(getIntegerValue(groupNode, "force_max"));
-            optionGroup.setDisplayOrder(resolveDisplayOrder(groupNode, groupOrder++));
+            optionGroup.setDisplayOrder(resolveDisplayOrder(
+                    groupNode,
+                    preferredOrderFromSourceId(sourceGroupId),
+                    groupOrder++,
+                    usedGroupOrders));
             optionGroup = restaurantMenuOptionGroupRepository.save(optionGroup);
 
             saveStringSetting(optionGroupMajorGroupSettingName(optionGroup.getId()), DEFAULT_IMPORTED_MAJOR_GROUP);
@@ -428,12 +436,14 @@ public class RestaurantMenuImportService {
         }
 
         int optionOrder = 0;
+        Set<Integer> usedOptionOrders = new LinkedHashSet<>();
         for (JsonNode optionNode : optionsNode) {
             RestaurantMenuOption option = new RestaurantMenuOption();
             option.setMenuVersionId(menuVersionId);
             option.setOptionGroupId(optionGroup.getId());
             option.setSourceGroupId(optionGroup.getSourceGroupId());
-            option.setSourceOptionId(getLongValue(optionNode, "id"));
+            Long sourceOptionId = getLongValue(optionNode, "id");
+            option.setSourceOptionId(sourceOptionId);
             option.setName(getTextValue(optionNode, "name"));
             option.setPrice(getDoubleValue(optionNode, "price"));
             option.setDefaultOption(getBooleanValue(optionNode, "default"));
@@ -442,7 +452,11 @@ public class RestaurantMenuImportService {
             option.setAdditives(readTextWithFallback(optionNode, "additives", "menu_item_additives"));
             option.setNutritionalValuesSize(readNutritionSize(optionNode));
             option.setExtrasJson(null);
-            option.setDisplayOrder(resolveDisplayOrder(optionNode, optionOrder++));
+            option.setDisplayOrder(resolveDisplayOrder(
+                    optionNode,
+                    preferredOrderFromSourceId(sourceOptionId),
+                    optionOrder++,
+                    usedOptionOrders));
             option = restaurantMenuOptionRepository.save(option);
 
             persistOptionTags(option, readStringArrayWithFallback(optionNode, "tags"));
@@ -730,9 +744,41 @@ public class RestaurantMenuImportService {
         return value.asBoolean();
     }
 
-    private Integer resolveDisplayOrder(JsonNode node, int fallbackIndex) {
+    private Integer resolveDisplayOrder(JsonNode node, int fallbackIndex, Set<Integer> usedOrders) {
+        return resolveDisplayOrder(node, null, fallbackIndex, usedOrders);
+    }
+
+    private Integer resolveDisplayOrder(JsonNode node, Integer preferredOrder, int fallbackIndex, Set<Integer> usedOrders) {
         Integer sourceSort = getStrictIntegerValue(node, "sort");
-        return sourceSort != null ? sourceSort : fallbackIndex;
+        if (sourceSort != null && (usedOrders == null || !usedOrders.contains(sourceSort))) {
+            if (usedOrders != null) {
+                usedOrders.add(sourceSort);
+            }
+            return sourceSort;
+        }
+
+        if (preferredOrder != null && (usedOrders == null || !usedOrders.contains(preferredOrder))) {
+            if (usedOrders != null) {
+                usedOrders.add(preferredOrder);
+            }
+            return preferredOrder;
+        }
+
+        int resolved = fallbackIndex;
+        if (usedOrders != null) {
+            while (usedOrders.contains(resolved)) {
+                resolved++;
+            }
+            usedOrders.add(resolved);
+        }
+        return resolved;
+    }
+
+    private Integer preferredOrderFromSourceId(Long sourceId) {
+        if (sourceId == null || sourceId <= 0L || sourceId > Integer.MAX_VALUE) {
+            return null;
+        }
+        return sourceId.intValue();
     }
 
     private Integer getStrictIntegerValue(JsonNode node, String fieldName) {

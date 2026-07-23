@@ -142,6 +142,9 @@ public class Restaurant{
     @Column(name = "send_to_tookan", nullable = false)
     private boolean sendToTookan;
 
+    @Column(name = "tagline")
+    private String tagline = "";
+
     @Column(name = "logo_image_asset_id")
     private Long logoImageAssetId;
 
@@ -313,6 +316,14 @@ public class Restaurant{
 
     public void setSendToTookan(boolean sendToTookan) {
         this.sendToTookan = sendToTookan;
+    }
+
+    public String getTagline() {
+        return tagline;
+    }
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
     }
 
     public Long getLogoImageAssetId() {
