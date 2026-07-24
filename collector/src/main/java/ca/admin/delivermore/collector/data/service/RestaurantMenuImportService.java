@@ -46,6 +46,8 @@ public class RestaurantMenuImportService {
     private static final String OPTION_GROUP_TAXATION_CATEGORY_SETTING_PREFIX = "option_group_taxation_category_";
     private static final String DEFAULT_IMPORTED_MAJOR_GROUP = "Food";
     private static final String DEFAULT_IMPORTED_TAXATION_CATEGORY = "Food";
+    private static final String PREFIX_HIDE_UNTIL = "HIDE_UNTIL|";
+    private static final String PREFIX_SHOW_RANGE = "SHOW_RANGE|";
 
     private final RestaurantMenuVersionRepository restaurantMenuVersionRepository;
     private final RestaurantMenuCategoryRepository restaurantMenuCategoryRepository;
@@ -230,16 +232,17 @@ public class RestaurantMenuImportService {
         int categoryOrder = 0;
         Set<Integer> usedCategoryOrders = new LinkedHashSet<>();
         for (JsonNode categoryNode : categoriesNode) {
+            ImportedVisibility visibility = readImportedVisibility(categoryNode);
             RestaurantMenuCategory category = new RestaurantMenuCategory();
             category.setMenuVersionId(menuVersionId);
             category.setSourceMenuId(sourceMenuId);
             category.setSourceCategoryId(getLongValue(categoryNode, "id"));
             category.setName(getTextValue(categoryNode, "name"));
             category.setDescription(getTextValue(categoryNode, "description"));
-            category.setActive(getBooleanValue(categoryNode, "active"));
-            category.setActiveBegin(getTextValue(categoryNode, "active_begin"));
-            category.setActiveEnd(getTextValue(categoryNode, "active_end"));
-            category.setActiveDays(getIntegerValue(categoryNode, "active_days"));
+            category.setActive(visibility.active());
+            category.setActiveBegin(visibility.activeBegin());
+            category.setActiveEnd(visibility.activeEnd());
+            category.setActiveDays(visibility.activeDays());
             category.setPictureId(getLongValue(categoryNode, "picture_id"));
             category.setDisplayOrder(resolveDisplayOrder(categoryNode, categoryOrder++, usedCategoryOrders));
             category = restaurantMenuCategoryRepository.save(category);
@@ -273,6 +276,7 @@ public class RestaurantMenuImportService {
         int itemOrder = 0;
         Set<Integer> usedItemOrders = new LinkedHashSet<>();
         for (JsonNode itemNode : itemsNode) {
+            ImportedVisibility visibility = readImportedVisibility(itemNode);
             RestaurantMenuItem item = new RestaurantMenuItem();
             item.setMenuVersionId(menuVersionId);
             item.setCategoryId(category.getId());
@@ -281,10 +285,10 @@ public class RestaurantMenuImportService {
             item.setName(getTextValue(itemNode, "name"));
             item.setDescription(getTextValue(itemNode, "description"));
             item.setBasePrice(getDoubleValue(itemNode, "price"));
-            item.setActive(getBooleanValue(itemNode, "active"));
-            item.setActiveBegin(getTextValue(itemNode, "active_begin"));
-            item.setActiveEnd(getTextValue(itemNode, "active_end"));
-            item.setActiveDays(getIntegerValue(itemNode, "active_days"));
+            item.setActive(visibility.active());
+            item.setActiveBegin(visibility.activeBegin());
+            item.setActiveEnd(visibility.activeEnd());
+            item.setActiveDays(visibility.activeDays());
             item.setOutOfStock(readBooleanWithFallback(itemNode, "is_out_of_stock", "is_out_of_stock"));
             item.setIngredients(readTextWithFallback(itemNode, "ingredients", "menu_item_ingredients"));
             item.setAdditives(readTextWithFallback(itemNode, "additives", "menu_item_additives"));
@@ -613,6 +617,29 @@ public class RestaurantMenuImportService {
             }
         }
         return values;
+    }
+
+    private record ImportedVisibility(Boolean active, String activeBegin, String activeEnd, Integer activeDays) {
+    }
+
+    private ImportedVisibility readImportedVisibility(JsonNode node) {
+        Boolean active = getBooleanValue(node, "active");
+        String activeBegin = trimToNull(getTextValue(node, "active_begin"));
+        String activeEnd = trimToNull(getTextValue(node, "active_end"));
+        Integer activeDays = getIntegerValue(node, "active_days");
+
+        String hiddenUntil = trimToNull(getTextValue(node, "hidden_until"));
+        if (hiddenUntil != null) {
+            return new ImportedVisibility(Boolean.FALSE, PREFIX_HIDE_UNTIL + hiddenUntil, null, 0);
+        }
+
+        String activeExactFrom = trimToNull(getTextValue(node, "active_exact_from"));
+        String activeExactUntil = trimToNull(getTextValue(node, "active_exact_until"));
+        if (activeExactFrom != null && activeExactUntil != null) {
+            return new ImportedVisibility(Boolean.TRUE, PREFIX_SHOW_RANGE + activeExactFrom, activeExactUntil, 127);
+        }
+
+        return new ImportedVisibility(active, activeBegin, activeEnd, activeDays);
     }
 
     private String trimToNull(String value) {
