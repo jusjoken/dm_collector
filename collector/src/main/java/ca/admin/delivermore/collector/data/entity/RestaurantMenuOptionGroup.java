@@ -50,6 +50,9 @@ public class RestaurantMenuOptionGroup {
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder = 0;
 
+    @Column(name = "item_display_order")
+    private Integer itemDisplayOrder = 0;
+
     public Long getId() {
         return id;
     }
@@ -152,5 +155,13 @@ public class RestaurantMenuOptionGroup {
 
     public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public Integer getItemDisplayOrder() {
+        return itemDisplayOrder;
+    }
+
+    public void setItemDisplayOrder(Integer itemDisplayOrder) {
+        this.itemDisplayOrder = itemDisplayOrder;
     }
 }

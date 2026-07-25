@@ -407,6 +407,7 @@ public class RestaurantMenuImportService {
         int groupOrder = 0;
         Set<Integer> usedGroupOrders = new LinkedHashSet<>();
         for (JsonNode groupNode : groupsNode) {
+            int itemDisplayOrder = groupOrder;
             RestaurantMenuOptionGroup optionGroup = new RestaurantMenuOptionGroup();
             optionGroup.setMenuVersionId(menuVersionId);
             optionGroup.setCategoryId(categoryId);
@@ -420,11 +421,11 @@ public class RestaurantMenuImportService {
             optionGroup.setAllowQuantity(getBooleanValue(groupNode, "allow_quantity"));
             optionGroup.setForceMin(getIntegerValue(groupNode, "force_min"));
             optionGroup.setForceMax(getIntegerValue(groupNode, "force_max"));
-            optionGroup.setDisplayOrder(resolveDisplayOrder(
-                    groupNode,
-                    preferredOrderFromSourceId(sourceGroupId),
+                optionGroup.setDisplayOrder(resolveLibraryDisplayOrder(
+                    sourceGroupId,
                     groupOrder++,
                     usedGroupOrders));
+                optionGroup.setItemDisplayOrder(itemDisplayOrder);
             optionGroup = restaurantMenuOptionGroupRepository.save(optionGroup);
 
             saveStringSetting(optionGroupMajorGroupSettingName(optionGroup.getId()), DEFAULT_IMPORTED_MAJOR_GROUP);
@@ -442,6 +443,7 @@ public class RestaurantMenuImportService {
         int optionOrder = 0;
         Set<Integer> usedOptionOrders = new LinkedHashSet<>();
         for (JsonNode optionNode : optionsNode) {
+            int itemDisplayOrder = optionOrder;
             RestaurantMenuOption option = new RestaurantMenuOption();
             option.setMenuVersionId(menuVersionId);
             option.setOptionGroupId(optionGroup.getId());
@@ -456,11 +458,11 @@ public class RestaurantMenuImportService {
             option.setAdditives(readTextWithFallback(optionNode, "additives", "menu_item_additives"));
             option.setNutritionalValuesSize(readNutritionSize(optionNode));
             option.setExtrasJson(null);
-            option.setDisplayOrder(resolveDisplayOrder(
-                    optionNode,
-                    preferredOrderFromSourceId(sourceOptionId),
+                option.setDisplayOrder(resolveLibraryDisplayOrder(
+                    sourceOptionId,
                     optionOrder++,
                     usedOptionOrders));
+                option.setItemDisplayOrder(itemDisplayOrder);
             option = restaurantMenuOptionRepository.save(option);
 
             persistOptionTags(option, readStringArrayWithFallback(optionNode, "tags"));
@@ -775,9 +777,28 @@ public class RestaurantMenuImportService {
         return resolveDisplayOrder(node, null, fallbackIndex, usedOrders);
     }
 
+    private Integer resolveLibraryDisplayOrder(Long sourceId, int fallbackIndex, Set<Integer> usedOrders) {
+        Integer preferredOrder = preferredOrderFromSourceId(sourceId);
+        if (preferredOrder != null && (usedOrders == null || !usedOrders.contains(preferredOrder))) {
+            if (usedOrders != null) {
+                usedOrders.add(preferredOrder);
+            }
+            return preferredOrder;
+        }
+
+        int resolved = fallbackIndex;
+        if (usedOrders != null) {
+            while (usedOrders.contains(resolved)) {
+                resolved++;
+            }
+            usedOrders.add(resolved);
+        }
+        return resolved;
+    }
+
     private Integer resolveDisplayOrder(JsonNode node, Integer preferredOrder, int fallbackIndex, Set<Integer> usedOrders) {
         Integer sourceSort = getStrictIntegerValue(node, "sort");
-        if (sourceSort != null && (usedOrders == null || !usedOrders.contains(sourceSort))) {
+        if (sourceSort != null && sourceSort > 0 && (usedOrders == null || !usedOrders.contains(sourceSort))) {
             if (usedOrders != null) {
                 usedOrders.add(sourceSort);
             }
