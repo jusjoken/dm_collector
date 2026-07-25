@@ -148,6 +148,12 @@ public class Restaurant{
     @Column(name = "logo_image_asset_id")
     private Long logoImageAssetId;
 
+    @Column(name = "brand_logo_image_asset_id")
+    private Long brandLogoImageAssetId;
+
+    @Column(name = "badge_logo_image_asset_id")
+    private Long badgeLogoImageAssetId;
+
     @Column(name = "location_address", length = 1000)
     private String locationAddress;
 
@@ -334,6 +340,32 @@ public class Restaurant{
         this.logoImageAssetId = logoImageAssetId;
     }
 
+    public Long getBrandLogoImageAssetId() {
+        return brandLogoImageAssetId;
+    }
+
+    public void setBrandLogoImageAssetId(Long brandLogoImageAssetId) {
+        this.brandLogoImageAssetId = brandLogoImageAssetId;
+    }
+
+    public Long getBadgeLogoImageAssetId() {
+        return badgeLogoImageAssetId;
+    }
+
+    public void setBadgeLogoImageAssetId(Long badgeLogoImageAssetId) {
+        this.badgeLogoImageAssetId = badgeLogoImageAssetId;
+    }
+
+    public Long getPreferredLogoImageAssetId() {
+        if (brandLogoImageAssetId != null) {
+            return brandLogoImageAssetId;
+        }
+        if (badgeLogoImageAssetId != null) {
+            return badgeLogoImageAssetId;
+        }
+        return logoImageAssetId;
+    }
+
     public String getLocationAddress() {
         return locationAddress;
     }
@@ -449,6 +481,8 @@ public class Restaurant{
                 ", sendToTablet=" + sendToTablet +
                 ", sendToTookan=" + sendToTookan +
                 ", logoImageAssetId=" + logoImageAssetId +
+                ", brandLogoImageAssetId=" + brandLogoImageAssetId +
+                ", badgeLogoImageAssetId=" + badgeLogoImageAssetId +
                 ", locationAddress='" + locationAddress + '\'' +
                 ", locationLatitude=" + locationLatitude +
                 ", locationLongitude=" + locationLongitude +

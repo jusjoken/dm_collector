@@ -14,6 +14,10 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Restaura
 
     long countByLogoImageAssetId(Long logoImageAssetId);
 
+    long countByBrandLogoImageAssetId(Long brandLogoImageAssetId);
+
+    long countByBadgeLogoImageAssetId(Long badgeLogoImageAssetId);
+
     @Query("select t from Restaurant t WHERE t.restaurantId = :restaurantId")
     List<Restaurant> findByRestaurantId(@Param("restaurantId") Long restaurantId);
 
