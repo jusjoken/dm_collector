@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
@@ -165,6 +166,10 @@ public class Restaurant{
 
     @Column(name = "location_verified_at")
     private LocalDateTime locationVerifiedAt;
+
+    @Lob
+    @Column(name = "business_hours_json", columnDefinition = "LONGTEXT")
+    private String businessHoursJson;
 
     public Restaurant() {
         super();
@@ -398,6 +403,14 @@ public class Restaurant{
         this.locationVerifiedAt = locationVerifiedAt;
     }
 
+    public String getBusinessHoursJson() {
+        return businessHoursJson;
+    }
+
+    public void setBusinessHoursJson(String businessHoursJson) {
+        this.businessHoursJson = businessHoursJson;
+    }
+
     public Double getDriverPayOverride() {
         return driverPayOverride;
     }
@@ -487,6 +500,7 @@ public class Restaurant{
                 ", locationLatitude=" + locationLatitude +
                 ", locationLongitude=" + locationLongitude +
                 ", locationVerifiedAt=" + locationVerifiedAt +
+                ", businessHoursJson='" + businessHoursJson + '\'' +
                 ", commissionRatePhonein=" + commissionRatePhonein +
                 ", commissionPerPhonein=" + commissionPerPhonein +
                 '}';
