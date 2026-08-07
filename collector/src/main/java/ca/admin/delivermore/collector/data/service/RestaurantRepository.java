@@ -27,6 +27,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Restaura
     @Query("select r from Restaurant r where r.name = :restaurantName and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null))")
     List<Restaurant> findEffectiveByRestaurantName(@Param("restaurantName") String restaurantName, @Param("dateEffective") LocalDate dateEffective);
 
+    @Query("select r from Restaurant r where lower(r.publicMenuSlug) = lower(:publicMenuSlug) and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null))")
+    List<Restaurant> findEffectiveByPublicMenuSlug(@Param("publicMenuSlug") String publicMenuSlug, @Param("dateEffective") LocalDate dateEffective);
+
     @Query("select t from Restaurant t WHERE t.formId = :formId")
     List<Restaurant> findByFormId(@Param("formId") Long formId);
 
@@ -45,6 +48,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Restaura
     @Query("select r from Restaurant r where ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null)) order by r.name")
     List<Restaurant> getEffectiveRestaurants(@Param("dateEffective") LocalDate dateEffective);
 
+    @Query("select r from Restaurant r where r.activeForOrders = true and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null)) order by r.customerTileSortOrder asc, r.name asc")
+    List<Restaurant> getEffectiveRestaurantsForOrders(@Param("dateEffective") LocalDate dateEffective);
+
     @Query("select r from Restaurant r where r.teamId = :teamId and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null)) order by r.name")
     List<Restaurant> getEffectiveRestaurantsForTeam(@Param("teamId") Long teamId, @Param("dateEffective") LocalDate dateEffective);
 
@@ -59,6 +65,12 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Restaura
 
     @Query("select r from Restaurant r where r.fetchMenuKey is not null and r.fetchMenuKey <> '' and ((r.dateEffective <= :dateEffective and r.dateExpired >= :dateEffective) or (r.dateEffective <= :dateEffective and r.dateExpired is null)) order by r.name")
     List<Restaurant> getEffectiveRestaurantsWithMenuKey(@Param("dateEffective") LocalDate dateEffective);
+
+    @Query("select count(r) > 0 from Restaurant r where lower(r.publicMenuSlug) = lower(:publicMenuSlug)")
+    boolean existsByPublicMenuSlug(@Param("publicMenuSlug") String publicMenuSlug);
+
+    @Query("select count(r) > 0 from Restaurant r where lower(r.publicMenuSlug) = lower(:publicMenuSlug) and r.restaurantId <> :restaurantId")
+    boolean existsByPublicMenuSlugForOtherRestaurant(@Param("publicMenuSlug") String publicMenuSlug, @Param("restaurantId") Long restaurantId);
 
 
     /* query for restaurant_new to get single effective row

@@ -20,6 +20,10 @@ public interface RestaurantMenuVersionRepository extends JpaRepository<Restauran
 
     RestaurantMenuVersion findByRestaurantIdAndActiveTrue(Long restaurantId);
 
+    RestaurantMenuVersion findByRestaurantIdAndWorkflowStatusAndActiveTrue(Long restaurantId, WorkflowStatus workflowStatus);
+
+    boolean existsByRestaurantIdAndWorkflowStatusAndActiveTrue(Long restaurantId, WorkflowStatus workflowStatus);
+
     boolean existsByRestaurantIdAndWorkflowStatus(Long restaurantId, WorkflowStatus workflowStatus);
 
     boolean existsByRestaurantIdAndWorkflowStatusIn(Long restaurantId, Set<WorkflowStatus> workflowStatus);

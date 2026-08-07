@@ -171,6 +171,24 @@ public class Restaurant{
     @Column(name = "business_hours_json", columnDefinition = "LONGTEXT")
     private String businessHoursJson;
 
+    @Column(name = "active_for_orders", nullable = false)
+    private boolean activeForOrders;
+
+    @Column(name = "public_menu_slug")
+    private String publicMenuSlug;
+
+    @Column(name = "customer_tile_sort_order")
+    private Integer customerTileSortOrder;
+
+    @Column(name = "customer_tile_ribbon_enabled", nullable = false)
+    private boolean customerTileRibbonEnabled;
+
+    @Column(name = "customer_tile_ribbon_text")
+    private String customerTileRibbonText;
+
+    @Column(name = "customer_tile_promo_text")
+    private String customerTilePromoText;
+
     public Restaurant() {
         super();
     }
@@ -411,6 +429,54 @@ public class Restaurant{
         this.businessHoursJson = businessHoursJson;
     }
 
+    public boolean getActiveForOrders() {
+        return activeForOrders;
+    }
+
+    public void setActiveForOrders(boolean activeForOrders) {
+        this.activeForOrders = activeForOrders;
+    }
+
+    public String getPublicMenuSlug() {
+        return publicMenuSlug;
+    }
+
+    public void setPublicMenuSlug(String publicMenuSlug) {
+        this.publicMenuSlug = publicMenuSlug;
+    }
+
+    public Integer getCustomerTileSortOrder() {
+        return customerTileSortOrder;
+    }
+
+    public void setCustomerTileSortOrder(Integer customerTileSortOrder) {
+        this.customerTileSortOrder = customerTileSortOrder;
+    }
+
+    public boolean getCustomerTileRibbonEnabled() {
+        return customerTileRibbonEnabled;
+    }
+
+    public void setCustomerTileRibbonEnabled(boolean customerTileRibbonEnabled) {
+        this.customerTileRibbonEnabled = customerTileRibbonEnabled;
+    }
+
+    public String getCustomerTileRibbonText() {
+        return customerTileRibbonText;
+    }
+
+    public void setCustomerTileRibbonText(String customerTileRibbonText) {
+        this.customerTileRibbonText = customerTileRibbonText;
+    }
+
+    public String getCustomerTilePromoText() {
+        return customerTilePromoText;
+    }
+
+    public void setCustomerTilePromoText(String customerTilePromoText) {
+        this.customerTilePromoText = customerTilePromoText;
+    }
+
     public Double getDriverPayOverride() {
         return driverPayOverride;
     }
@@ -501,6 +567,12 @@ public class Restaurant{
                 ", locationLongitude=" + locationLongitude +
                 ", locationVerifiedAt=" + locationVerifiedAt +
                 ", businessHoursJson='" + businessHoursJson + '\'' +
+                ", activeForOrders=" + activeForOrders +
+                ", publicMenuSlug='" + publicMenuSlug + '\'' +
+                ", customerTileSortOrder=" + customerTileSortOrder +
+                ", customerTileRibbonEnabled=" + customerTileRibbonEnabled +
+                ", customerTileRibbonText='" + customerTileRibbonText + '\'' +
+                ", customerTilePromoText='" + customerTilePromoText + '\'' +
                 ", commissionRatePhonein=" + commissionRatePhonein +
                 ", commissionPerPhonein=" + commissionPerPhonein +
                 '}';
