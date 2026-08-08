@@ -1,0 +1,15 @@
+2026-07-24 14:15:43.795 INFO c.a.d.c.c.BatchConfigRestaurantMenu [main] restaurantMenuItemReader: checking 6 effective restaurants for menu data
+2026-07-24 14:15:44.784 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:Edo Japan with json size:96419
+2026-07-24 14:15:45.031 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:King Palace with json size:128451
+2026-07-24 14:15:45.314 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:McDonald's with json size:593778
+2026-07-24 14:15:45.576 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:OPA! with json size:68404
+2026-07-24 14:15:45.838 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:Original Joe's Strathmore with json size:109543
+2026-07-24 14:15:46.058 INFO c.a.d.c.d.s.RestClientService [main] getGlobalMenuJson: Processing menu for restaurant:Pho Minh with json size:125803
+2026-07-24 14:15:46.061 INFO c.a.d.c.c.BatchConfigRestaurantMenu [main] restaurantMenuItemReader: queued 6 menu payloads for import
+2026-07-24 14:15:47.529 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 14 for restaurant Edo Japan (402973)
+2026-07-24 14:15:48.761 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 15 for restaurant King Palace (616253)
+2026-07-24 14:15:55.514 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 7 for restaurant McDonald's (402982)
+2026-07-24 14:15:59.435 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 14 for restaurant OPA! (402985)
+2026-07-24 14:16:00.934 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 14 for restaurant Original Joe's Strathmore (402986)
+2026-07-24 14:16:02.929 INFO c.a.d.c.d.s.RestaurantMenuImportService [main] importMenu: imported menu version 14 for restaurant Pho Minh (402990)
+2026-07-24 14:16:03.569 INFO c.a.d.c.c.StagedRestaurantOrderSchemaService [main] widenApprovalStatusColumn: ensured staged_restaurant_order.approval_status can store MISSED

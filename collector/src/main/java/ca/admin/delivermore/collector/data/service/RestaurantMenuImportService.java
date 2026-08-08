@@ -62,6 +62,8 @@ public class RestaurantMenuImportService {
     private final RestaurantMenuOptionAllergenRepository restaurantMenuOptionAllergenRepository;
     private final RestaurantMenuOptionNutritionRepository restaurantMenuOptionNutritionRepository;
     private final SettingRepository settingRepository;
+    private final RestaurantMenuImageAssociationService restaurantMenuImageAssociationService;
+    private final RestaurantMenuItemSpotlightPreferenceService restaurantMenuItemSpotlightPreferenceService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public RestaurantMenuImportService(
@@ -77,7 +79,9 @@ public class RestaurantMenuImportService {
             RestaurantMenuOptionTagRepository restaurantMenuOptionTagRepository,
             RestaurantMenuOptionAllergenRepository restaurantMenuOptionAllergenRepository,
             RestaurantMenuOptionNutritionRepository restaurantMenuOptionNutritionRepository,
-            SettingRepository settingRepository) {
+            SettingRepository settingRepository,
+            RestaurantMenuImageAssociationService restaurantMenuImageAssociationService,
+            RestaurantMenuItemSpotlightPreferenceService restaurantMenuItemSpotlightPreferenceService) {
         this.restaurantMenuVersionRepository = restaurantMenuVersionRepository;
         this.restaurantMenuCategoryRepository = restaurantMenuCategoryRepository;
         this.restaurantMenuItemRepository = restaurantMenuItemRepository;
@@ -91,6 +95,8 @@ public class RestaurantMenuImportService {
         this.restaurantMenuOptionAllergenRepository = restaurantMenuOptionAllergenRepository;
         this.restaurantMenuOptionNutritionRepository = restaurantMenuOptionNutritionRepository;
         this.settingRepository = settingRepository;
+        this.restaurantMenuImageAssociationService = restaurantMenuImageAssociationService;
+        this.restaurantMenuItemSpotlightPreferenceService = restaurantMenuItemSpotlightPreferenceService;
     }
 
     @Transactional
@@ -128,6 +134,8 @@ public class RestaurantMenuImportService {
             menuVersion.getSourceMenuId(),
             discoveredItemTags,
             discoveredItemAllergens);
+        restaurantMenuImageAssociationService.applyAssociationsToMenuVersion(menuVersion);
+        restaurantMenuItemSpotlightPreferenceService.applyPreferencesToMenuVersion(menuVersion);
         mergeMenuEditorLookupValues(ITEM_TAG_OPTIONS_SETTING, discoveredItemTags);
         mergeMenuEditorLookupValues(ITEM_ALLERGEN_OPTIONS_SETTING, discoveredItemAllergens);
         trimOldVersions(payload.getRestaurantId());
@@ -172,6 +180,8 @@ public class RestaurantMenuImportService {
             draftVersion.getSourceMenuId(),
             new LinkedHashSet<>(),
             new LinkedHashSet<>());
+        restaurantMenuImageAssociationService.applyAssociationsToMenuVersion(draftVersion);
+        restaurantMenuItemSpotlightPreferenceService.applyPreferencesToMenuVersion(draftVersion);
         trimOldVersions(restaurantId);
         log.info("createDraftFromLatestPulledVersion: created draft version {} for restaurant {}", draftVersion.getVersionNumber(), restaurantId);
         return draftVersion;

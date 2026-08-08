@@ -71,6 +71,9 @@ public class RestaurantMenuItem {
     @Column(name = "image_asset_id")
     private Long imageAssetId;
 
+    @Column(name = "spotlight_preferred", nullable = false)
+    private Boolean spotlightPreferred = Boolean.FALSE;
+
     public Long getId() {
         return id;
     }
@@ -229,5 +232,13 @@ public class RestaurantMenuItem {
 
     public void setImageAssetId(Long imageAssetId) {
         this.imageAssetId = imageAssetId;
+    }
+
+    public Boolean getSpotlightPreferred() {
+        return spotlightPreferred;
+    }
+
+    public void setSpotlightPreferred(Boolean spotlightPreferred) {
+        this.spotlightPreferred = spotlightPreferred;
     }
 }
