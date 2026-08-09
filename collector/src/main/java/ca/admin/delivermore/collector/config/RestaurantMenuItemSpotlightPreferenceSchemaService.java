@@ -20,11 +20,15 @@ public class RestaurantMenuItemSpotlightPreferenceSchemaService {
 
     @EventListener(ApplicationReadyEvent.class)
     public void ensureRestaurantMenuItemSpotlightPreferenceStorage() {
-        try {
-            jdbcTemplate.execute("ALTER TABLE restaurant_menu_item ADD COLUMN spotlight_preferred BIT NOT NULL DEFAULT b'0'");
-            log.info("ensureRestaurantMenuItemSpotlightPreferenceStorage: added restaurant_menu_item.spotlight_preferred");
-        } catch (RuntimeException ex) {
-            log.debug("ensureRestaurantMenuItemSpotlightPreferenceStorage: restaurant_menu_item.spotlight_preferred already present or could not be added: {}", ex.getMessage());
+        if (!columnExists("restaurant_menu_item", "spotlight_preferred")) {
+            try {
+                jdbcTemplate.execute("ALTER TABLE restaurant_menu_item ADD COLUMN spotlight_preferred BIT NOT NULL DEFAULT b'0'");
+                log.info("ensureRestaurantMenuItemSpotlightPreferenceStorage: added restaurant_menu_item.spotlight_preferred");
+            } catch (RuntimeException ex) {
+                log.warn("ensureRestaurantMenuItemSpotlightPreferenceStorage: unable to add restaurant_menu_item.spotlight_preferred: {}", ex.getMessage(), ex);
+            }
+        } else {
+            log.debug("ensureRestaurantMenuItemSpotlightPreferenceStorage: restaurant_menu_item.spotlight_preferred already present");
         }
 
         try {
@@ -45,6 +49,26 @@ public class RestaurantMenuItemSpotlightPreferenceSchemaService {
             log.info("ensureRestaurantMenuItemSpotlightPreferenceStorage: ensured restaurant_menu_item_spotlight_preference exists");
         } catch (RuntimeException ex) {
             log.warn("ensureRestaurantMenuItemSpotlightPreferenceStorage: unable to create restaurant_menu_item_spotlight_preference: {}", ex.getMessage(), ex);
+        }
+    }
+
+    private boolean columnExists(String tableName, String columnName) {
+        try {
+            Integer count = jdbcTemplate.queryForObject(
+                    """
+                    SELECT COUNT(*)
+                    FROM information_schema.columns
+                    WHERE table_schema = DATABASE()
+                      AND table_name = ?
+                      AND column_name = ?
+                    """,
+                    Integer.class,
+                    tableName,
+                    columnName);
+            return count != null && count > 0;
+        } catch (RuntimeException ex) {
+            log.debug("ensureRestaurantMenuItemSpotlightPreferenceStorage: unable to inspect column existence for {}.{}: {}", tableName, columnName, ex.getMessage());
+            return false;
         }
     }
 }

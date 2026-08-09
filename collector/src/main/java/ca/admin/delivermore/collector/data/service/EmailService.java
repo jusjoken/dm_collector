@@ -132,15 +132,14 @@ public class EmailService
             {
                 String from = Config.getInstance().getFromEmail();
 
-                mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-                mimeMessage.setFrom(new InternetAddress(from));
-                mimeMessage.setSubject(subject);
-                mimeMessage.setText(body);
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                helper.setTo(InternetAddress.parse(to));
+                helper.setFrom(new InternetAddress(from));
+                helper.setSubject(subject);
+                helper.setText(body, false);
 
                 FileSystemResource file = new FileSystemResource(fileToAttach);
-                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
                 helper.addAttachment(attachmentName, file);
-                helper.setText("", true);
             }
         };
 
